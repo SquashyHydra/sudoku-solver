@@ -82,11 +82,11 @@ def generate_single_puzzle():
         gen_sol = True
         while gen_sol:
             solution = generate_solution()
-            if solution != False:
+            if solution is not False:  # Change made here
                 gen_sol = False
         num_cells_to_remove = random.randint(40, 60)
         puzzle = create_puzzle(solution, num_cells_to_remove)
-        if puzzle != False:
+        if puzzle is not False:  # Change made here
             puz_gen = False
     return puzzle, solution
 
