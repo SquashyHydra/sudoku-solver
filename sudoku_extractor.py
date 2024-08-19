@@ -47,17 +47,17 @@ def predict_digits(cells, model):
     digits = np.argmax(predictions, axis=1)
     return digits
 
-def reconstruct_sudoku_grid(digits, view=False, grid_size=9):
+def reconstruct_sudoku_grid(digits, grid_size=9):
     sudoku_grid = np.zeros((grid_size, grid_size), dtype=int)
-    print(f"Extracted Numbers:\n{digits}\n")
     for i, digit in enumerate(digits):
         row = i // grid_size
         col = i % grid_size
         sudoku_grid[row, col] = digit
-        print(f"Extracted Numbers:\n{digits}\n");print("Sudoku grid:\n", sudoku_grid)
     return sudoku_grid
 
 # Main execution
+view = True
 cells = preprocess_image(test_image)
 digits = predict_digits(cells, model)
 sudoku_grid = reconstruct_sudoku_grid(digits, True)
+if view: print(f"Extracted Numbers:\n{digits}\n");print("Sudoku grid:\n", sudoku_grid)
