@@ -57,7 +57,7 @@ def generate_solution():
                 board[i + r][i + c] = nums.pop()
     
     if not solve(board):
-        raise Exception("Failed to generate a valid Sudoku board")
+        return False
 
     return board
 
@@ -77,9 +77,17 @@ def create_puzzle(solution, num_cells_to_remove):
     return puzzle
 
 def generate_single_puzzle():
-    solution = generate_solution()
-    num_cells_to_remove = random.randint(40, 60)
-    puzzle = create_puzzle(solution, num_cells_to_remove)
+    puz_gen = True
+    while puz_gen:
+        gen_sol = True
+        while gen_sol:
+            solution = generate_solution()
+            if solution != False:
+                gen_sol = False
+        num_cells_to_remove = random.randint(40, 60)
+        puzzle = create_puzzle(solution, num_cells_to_remove)
+        if puzzle != False:
+            puz_gen = False
     return puzzle, solution
 
 def save_sudoku_puzzles(filename, num_puzzles=100):
