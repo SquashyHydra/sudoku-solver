@@ -32,4 +32,4 @@ loss, accuracy = model.evaluate(x_test, y_test)
 print(f"Test accuracy: {accuracy:.4f}")
 
 # Save model
-model.save('mnist_model.h5')
+model.save('mnist_model.keras')
