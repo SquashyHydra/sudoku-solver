@@ -143,8 +143,8 @@ def continuously_generate_sudoku_puzzles(filename):
         
         with open(filename, 'w') as file:
             json.dump(data, file)
-            
+
 # Example Usage
 if __name__ == "__main__":
-    #save_sudoku_data('sudoku_datav4.json', num_puzzles=1000)  # Generate and save puzzles and solutions
-    continuously_generate_sudoku_puzzles('sudoku_datav5.json')
+    save_sudoku_data('sudoku_datav4.json', num_puzzles=1000)  # Generate and save puzzles and solutions
+    #continuously_generate_sudoku_puzzles('sudoku_datav5.json')
