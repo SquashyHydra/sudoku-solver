@@ -1,61 +1,57 @@
+import random
 import numpy as np
 import json
 
-class Sudoku_DataGeneration:
-    def __init__(self):
-        self.data = []
-        self.labels = []
+def create_sudoku():
+    def is_valid(board, row, col, num):
+        if num in board[row]:
+            return False
+        if num in board[:, col]:
+            return False
+        box_row, box_col = 3 * (row // 3), 3 * (col // 3)
+        if num in board[box_row:box_row + 3, box_col:box_col + 3]:
+            return False
+        return True
 
-    def generate_sudoku_data(self, n_samples=1000):
-        for _ in range(n_samples):
-            grid = self.generate_sudoku_grid()
-            self.solve(grid, collect_data=True)
-        self.save_data_to_file('sudoku_data.json')
+    def solve(board):
+        for row in range(9):
+            for col in range(9):
+                if board[row][col] == 0:
+                    for num in range(1, 10):
+                        if is_valid(board, row, col, num):
+                            board[row][col] = num
+                            if solve(board):
+                                return True
+                            board[row][col] = 0
+                    return False
+        return True
 
-    def generate_sudoku_grid(self):
-        grid = np.zeros((9, 9), dtype=int)
-        for _ in range(np.random.randint(10, 20)):
-            row, col = np.random.randint(0, 9, size=2)
-            num = np.random.randint(1, 10)
-            if self.is_valid_move(grid, num, row, col):
-                grid[row][col] = num
-        return grid
+    board = np.zeros((9, 9), dtype=int)
+    
+    for i in range(0, 9, 3):
+        nums = list(range(1, 10))
+        random.shuffle(nums)
+        for r in range(3):
+            for c in range(3):
+                board[i + r][i + c] = nums.pop()
+    
+    if not solve(board):
+        raise Exception("Failed to generate a valid Sudoku board")
 
-    def is_valid_move(self, grid, num, row, col):
-        return (num not in grid[row] and
-                num not in grid[:, col] and
-                num not in grid[row//3*3:(row//3+1)*3, col//3*3:(col//3+1)*3])
+    num_cells_to_remove = random.randint(40, 60)
+    cells = list((i, j) for i in range(9) for j in range(9))
+    random.shuffle(cells)
+    for i in range(num_cells_to_remove):
+        row, col = cells[i]
+        board[row][col] = 0
 
-    def solve(self, grid, collect_data=False):
-        empty_cell = self.find_empty_cell(grid)
-        if not empty_cell:
-            return True
+    return board
 
-        row, col = empty_cell
-        for num in range(1, 10):
-            if self.is_valid_move(grid, num, row, col):
-                grid[row][col] = num
-                if collect_data:
-                    self.data.append(grid.flatten().tolist())
-                    self.labels.append(num)
-                if self.solve(grid, collect_data):
-                    return True
-                grid[row][col] = 0
-
-        return False
-
-    def find_empty_cell(self, grid):
-        for i in range(9):
-            for j in range(9):
-                if grid[i][j] == 0:
-                    return (i, j)
-        return None
-
-    def save_data_to_file(self, filename):
-        with open(filename, 'w') as file:
-            json.dump({'data': self.data, 'labels': self.labels}, file)
+def save_sudoku_puzzles(filename, num_puzzles=100):
+    puzzles = [create_sudoku().tolist() for _ in range(num_puzzles)]
+    with open(filename, 'w') as file:
+        json.dump(puzzles, file)
 
 # Example Usage
 if __name__ == "__main__":
-    generator = Sudoku_DataGeneration()
-    generator.generate_sudoku_data(n_samples=10000)  # Generate synthetic data and save to file
+    save_sudoku_puzzles('sudoku_puzzles.json', num_puzzles=1000)  # Generate and save puzzles
