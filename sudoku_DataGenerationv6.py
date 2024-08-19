@@ -92,6 +92,7 @@ def generate_single_puzzle():
     return puzzle, solution
 
 def save_sudoku_data(filename, num_puzzles=100):
+    counter = 0
     try:
         while True:
             try:
@@ -161,5 +162,5 @@ def continuously_generate_sudoku_puzzles(filename):
 
 # Example Usage
 if __name__ == "__main__":
-    save_sudoku_data('sudoku_datav4.json', num_puzzles=1000)  # Generate and save puzzles and solutions
-    #continuously_generate_sudoku_puzzles('sudoku_datav5.json')
+    #save_sudoku_data('sudoku_datav4.json', num_puzzles=1000)  # Generate and save puzzles and solutions
+    continuously_generate_sudoku_puzzles('sudoku_datav5.json')
