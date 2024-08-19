@@ -3,17 +3,9 @@ import numpy as np
 import json
 
 def one_hot_encode(solutions):
-    num_samples, num_cells = solutions.shape
-    num_classes = 9
-    y_encoded = np.zeros((num_samples, num_cells, num_classes))
-    
-    for i in range(num_samples):
-        for j in range(num_cells):
-            value = solutions[i, j] - 1  # Sudoku values are 1-9; adjust to 0-8
-            if value >= 0:  # Only encode non-zero values
-                y_encoded[i, j, value] = 1
-    
-    return y_encoded
+    # Assuming solutions are of shape (number of samples, 81)
+    num_classes = 9  # Since Sudoku numbers are from 1 to 9
+    return np.eye(num_classes)[solutions - 1]  # One-hot encode and adjust indices
 
 def load_sudoku_data(filename):
     with open(filename, 'r') as file:
@@ -27,8 +19,8 @@ def load_sudoku_data(filename):
     
     # One-hot encode the solutions
     solutions_encoded = one_hot_encode(solutions)
-    
-    return puzzles, solutions_encoded
+
+    return puzzles, solutions
 
 def build_model():
     model = tf.keras.Sequential([
