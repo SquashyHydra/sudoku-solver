@@ -14,7 +14,7 @@ def is_valid(board, row, col, num):
     return True
 
 def solve(board):
-    print(f'Solving Board')
+    # Find the first empty cell
     for row in range(9):
         for col in range(9):
             if board[row][col] == 0:  # Empty cell
@@ -28,7 +28,7 @@ def solve(board):
     return True
 
 def generate_solution():
-    print(f"Generating Solution")
+    print(f"Generating Solution\n", end='\r', flush=True)
     board = np.zeros((9, 9), dtype=int)
     
     # Fill the diagonal 3x3 boxes to start
@@ -45,25 +45,25 @@ def generate_solution():
     
     return board
 
-def create_puzzle(solution, num_cells_to_remove):
-    print(f'Creating Puzzle')
-    puzzle = solution.copy()
-    cells = list((i, j) for i in range(9) for j in range(9))
-    random.shuffle(cells)
-    
-    # Store removed cells
-    removed_cells = set()
-    
-    for i in range(num_cells_to_remove):
-        row, col = cells[i]
-        removed_cells.add((row, col))
-        puzzle[row][col] = 0
-
-    # Ensure the puzzle has a unique solution
-    if not has_unique_solution(puzzle, removed_cells):
-        return create_puzzle(solution, num_cells_to_remove)  # Retry if no unique solution
-    
-    return puzzle
+def create_puzzle(solution, num_cells_to_remove, max_attempts=10):
+    for attempt in range(max_attempts):
+        puzzle = solution.copy()
+        cells = list((i, j) for i in range(9) for j in range(9))
+        random.shuffle(cells)
+        
+        # Store removed cells
+        removed_cells = set()
+        
+        for i in range(num_cells_to_remove):
+            row, col = cells[i]
+            removed_cells.add((row, col))
+            puzzle[row][col] = 0
+        
+        # Ensure the puzzle has a unique solution
+        if has_unique_solution(puzzle, removed_cells):
+            return puzzle
+        
+    raise Exception("Failed to create a puzzle with a unique solution after several attempts")
 
 def has_unique_solution(puzzle, removed_cells):
     def count_solutions(board):
@@ -82,7 +82,7 @@ def has_unique_solution(puzzle, removed_cells):
                                 board[row][col] = 0
                         return
             solutions_count[0] += 1
-        print(f'Unique Solution')
+
         count(puzzle.copy())
         return solutions_count[0]
 
@@ -96,20 +96,23 @@ def generate_single_puzzle():
 
 def save_sudoku_data(filename, num_puzzles=100):
     counter = 0
+    puzzles = []
+    solutions = []
+    
     try:
-        try:
-            with Pool(processes=cpu_count()) as pool:
-                results = [pool.apply_async(generate_single_puzzle) for _ in range(num_puzzles)]
-                results = [r.get() for r in results]  # Wait for all results
-
-            puzzles, solutions = zip(*results)
-            counter += 1
-            print(f"Generated puzzle number: {counter}", end="\r", flush=True)
-        except KeyboardInterrupt:
-            print(f"\nGeneration stopped. Total puzzles created: {counter}")
-        except Exception as e:
-            print(f"\nAn error occurred: {e}")
-            # Optionally continue generating if an error occurs
+        with Pool(processes=cpu_count()) as pool:
+            results = [pool.apply_async(generate_single_puzzle) for _ in range(num_puzzles)]
+            results = [r.get() for r in results]  # Wait for all results
+            
+        puzzles, solutions = zip(*results)
+        counter += len(puzzles)
+        print(f"Generated {counter} puzzles", end="\r", flush=True)
+        
+    except KeyboardInterrupt:
+        print(f"\nGeneration stopped. Total puzzles created: {counter}")
+    except Exception as e:
+        print(f"\nAn error occurred: {e}")
+    
     finally:
         data = {
             'puzzles': [p.flatten().tolist() for p in puzzles],
@@ -118,6 +121,7 @@ def save_sudoku_data(filename, num_puzzles=100):
         
         with open(filename, 'w') as file:
             json.dump(data, file)
+        print(f"\nData saved to {filename}")
 
 def continuously_generate_sudoku_puzzles(filename):
     counter = 0
@@ -136,7 +140,7 @@ def continuously_generate_sudoku_puzzles(filename):
                 solutions.extend(new_solutions)
                 
                 counter += len(new_puzzles)
-                print(f"Generated puzzle number: {counter}", end="\r", flush=True)
+                print(f"Generated {counter} puzzles", end="\r", flush=True)
                 
                 # Optionally save periodically to avoid large memory usage
                 if counter % 100 == 0:
@@ -147,12 +151,13 @@ def continuously_generate_sudoku_puzzles(filename):
                     with open(filename, 'w') as file:
                         json.dump(data, file)
                     print(f"\nSaved data at count {counter}")
+                    
             except KeyboardInterrupt:
                 print(f"\nGeneration stopped. Total puzzles created: {counter}")
                 break
             except Exception as e:
                 print(f"\nAn error occurred: {e}")
-                # Optionally continue generating if an error occurs
+                
     finally:
         # Save remaining puzzles and solutions before exiting
         data = {
@@ -166,4 +171,4 @@ def continuously_generate_sudoku_puzzles(filename):
 # Example Usage
 if __name__ == "__main__":
     save_sudoku_data('sudoku_data.json', num_puzzles=1000)
-    #continuously_generate_sudoku_puzzles('sudoku_data.json')
+    # continuously_generate_sudoku_puzzles('sudoku_data.json')
