@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
-class SudokuAI:
+class Sudoku_DataGeneration:
     def __init__(self):
         self.model = RandomForestClassifier()
         self.data = []
@@ -65,6 +65,4 @@ class SudokuAI:
         return self.model.predict(grid.flatten().reshape(1, -1))
 
 # Example Usage
-sudoku_ai = SudokuAI()
-sudoku_ai.generate_sudoku_data(n_samples=10000)  # Generate synthetic data
-sudoku_ai.train_model()  # Train the model on the generated data
+Sudoku_DataGeneration.generate_sudoku_data(n_samples=10000)  # Generate synthetic data
