@@ -1,29 +1,15 @@
-from sklearn.ensemble import RandomForestClassifier
 import numpy as np
-import json
-
-def load_sudoku_data(filename):
-    with open(filename, 'r') as file:
-        dataset = json.load(file)
-    X = np.array(dataset['data'])
-    y = np.array(dataset['labels'])
-    return X, y
+import tensorflow as tf
 
 class SudokuAI:
     def __init__(self, grid):
         self.grid = grid
-        self.model = self.train_model()
-
-    def train_model(self):
-        # Load and prepare training data
-        X_train, y_train = load_sudoku_data('sudoku_data.json')
-        model = RandomForestClassifier()
-        model.fit(X_train, y_train)
-        return model
+        self.model = tf.keras.models.load_model('sudoku_ai_model.h5')  # Load the trained model
 
     def predict_next_move(self, grid):
         flattened_grid = np.array(grid).flatten().reshape(1, -1)
-        return self.model.predict(flattened_grid)
+        prediction = self.model.predict(flattened_grid)
+        return prediction.reshape((9, 9))  # Reshape prediction to a 9x9 grid
 
     def find_empty_cell(self):
         for i in range(9):
