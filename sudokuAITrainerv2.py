@@ -9,6 +9,9 @@ def load_sudoku_data(filename):
     puzzles = np.array(dataset['puzzles'])
     solutions = np.array(dataset['solutions'])
     
+    if puzzles.shape[1] != 81 or solutions.shape[1] != 81:
+        raise ValueError("Puzzles and solutions must have shape (number of samples, 81)")
+    
     return puzzles, solutions
 
 def build_model():
@@ -28,7 +31,7 @@ def train_and_save_model():
     model = build_model()
     model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1)
     
-    model.save('sudoku_solver_modelv2.keras')
+    model.save('sudoku_ai_modelv2.keras')
 
 # Example Usage
 if __name__ == "__main__":
