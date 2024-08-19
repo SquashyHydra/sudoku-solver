@@ -33,7 +33,7 @@ class SudokuAI:
                 else: 
                     print(self.grid[i][j], end = " ") 
             print()
-            
+
 sudoku_puzzle = [
     [1, 3, 0, 0, 5, 0, 0, 0, 0],
     [5, 0, 0, 7, 0, 0, 0, 0, 2],
@@ -41,8 +41,9 @@ sudoku_puzzle = [
     [9, 1, 0, 0, 0, 0, 0, 8, 7],
     [0, 0, 7, 0, 6, 0, 1, 0, 0],
     [0, 0, 0, 0, 4, 0, 0, 0, 0],
-    [3, 4, 0, 0, 0, 0, 0, 6, 3],
-    [0, 8, 0, 0, 0, 0, 0, 5, 0]
+    [3, 4, 0, 0, 0, 0, 0, 6, 0],  # Changed from 3 to 0 to make it 9x9
+    [0, 8, 0, 0, 0, 0, 0, 5, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]   # Added an empty row to make it 9x9
 ]
 
 # Check grid size
