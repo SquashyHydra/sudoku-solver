@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import random
+from multiprocessing import Pool, cpu_count
 
 def is_valid(board, row, col, num):
     if num in board[row]:
@@ -84,22 +85,21 @@ def has_unique_solution(puzzle, removed_cells):
 
     return count_solutions(puzzle) == 1
 
+def generate_single_puzzle():
+    solution = generate_solution()
+    num_cells_to_remove = random.randint(40, 60)
+    puzzle = create_puzzle(solution, num_cells_to_remove)
+    return puzzle, solution
+
 def save_sudoku_data(filename, num_puzzles=100):
-    counter = 0
-    puzzles = []
-    solutions = []
-    
-    for _ in range(num_puzzles):
-        print(f"Generated puzzle number: {counter}", end="\r", flush=True)
-        solution = generate_solution()
-        num_cells_to_remove = random.randint(40, 60)
-        puzzle = create_puzzle(solution, num_cells_to_remove)
-        puzzles.append(puzzle.flatten().tolist())
-        solutions.append(solution.flatten().tolist())
-    
+    with Pool(processes=cpu_count()) as pool:
+        results = pool.map(generate_single_puzzle, range(num_puzzles))
+
+    puzzles, solutions = zip(*results)
+
     data = {
-        'puzzles': puzzles,
-        'solutions': solutions
+        'puzzles': [p.flatten().tolist() for p in puzzles],
+        'solutions': [s.flatten().tolist() for s in solutions]
     }
     
     with open(filename, 'w') as file:
