@@ -44,7 +44,7 @@ def generate_solution():
     
     return board
 
-def create_puzzle(solution, num_cells_to_remove, max_attempts=10):
+def create_puzzle(solution, num_cells_to_remove, max_attempts=20):
     for attempt in range(max_attempts):
         puzzle = solution.copy()
         cells = list((i, j) for i in range(9) for j in range(9))
@@ -59,12 +59,12 @@ def create_puzzle(solution, num_cells_to_remove, max_attempts=10):
             puzzle[row][col] = 0
         
         # Ensure the puzzle has a solution count between 2 and 6
-        if has_solution_count_in_range(puzzle, removed_cells, min_count=2, max_count=6):
+        if has_solution_count_in_range(puzzle):
             return puzzle
         
     raise Exception("Failed to create a puzzle with the desired number of solutions after several attempts")
 
-def has_solution_count_in_range(puzzle, removed_cells, min_count, max_count):
+def has_solution_count_in_range(puzzle, min_count=2, max_count=6):
     def count_solutions(board):
         solutions_count = [0]  # Use a mutable object to count solutions
 
@@ -89,11 +89,11 @@ def has_solution_count_in_range(puzzle, removed_cells, min_count, max_count):
     return min_count <= count <= max_count
 
 def generate_single_puzzle():
-    print(f"Generating Solution")
+    print(f"Generating Solution      ")
     solution = generate_solution()
     print('\033[F\033[F')
     num_cells_to_remove = random.randint(40, 60)
-    print(f"Creating Puzzle")
+    print(f"Creating Puzzle       ")
     puzzle = create_puzzle(solution, num_cells_to_remove)
     print('\033[F\033[F')
     return puzzle, solution
