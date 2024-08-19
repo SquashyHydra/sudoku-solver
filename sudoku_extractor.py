@@ -1,5 +1,3 @@
-import numpy as np
-import cv2
 from threading import Thread
 
 class viewImage(Thread):
@@ -16,14 +14,15 @@ class viewImage(Thread):
     def run(self):
         self.show_image()
 
-test_image = r"C:/Users/squas/Pictures/screenshots/Screenshot 2024-08-19 082938.png"
+test_image = r'/home/squashyhydra/sudoku-solver/image test/Screenshot 2024-08-19 082938.png'
+model_path = r'/home/squashyhydra/sudoku-solver/mnist_model.keras'
 
 import tensorflow as tf
 import numpy as np
 import cv2
 
 # Load the pretrained MNIST model
-model = tf.keras.models.load_model('path_to_your_mnist_model.h5')
+model = tf.keras.models.load_model(model_path)
 
 def preprocess_image(image_path):
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
@@ -50,6 +49,7 @@ def predict_digits(cells, model):
 
 def reconstruct_sudoku_grid(digits, grid_size=9):
     sudoku_grid = np.zeros((grid_size, grid_size), dtype=int)
+    print(f"Extracted Numbers:\n{digits}\n")
     for i, digit in enumerate(digits):
         row = i // grid_size
         col = i % grid_size
@@ -57,7 +57,7 @@ def reconstruct_sudoku_grid(digits, grid_size=9):
     return sudoku_grid
 
 # Main execution
-cells = preprocess_image('path_to_your_sudoku_image.png')
+cells = preprocess_image(test_image)
 digits = predict_digits(cells, model)
 sudoku_grid = reconstruct_sudoku_grid(digits)
 print("Sudoku grid:\n", sudoku_grid)
