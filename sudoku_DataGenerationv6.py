@@ -1,7 +1,6 @@
 import numpy as np
 import json
 import random
-import itertools
 
 def is_valid(board, row, col, num):
     if num in board[row]:
@@ -76,36 +75,40 @@ def create_puzzle(solution, num_cells_to_remove):
 
     return puzzle
 
-def generate_single_puzzle():
+def generate_single_puzzle(used_puzzles):
     puz_gen = True
     while puz_gen:
         gen_sol = True
         while gen_sol:
             solution = generate_solution()
-            if solution is not False:  # Change made here
+            if solution is not False:
                 gen_sol = False
         num_cells_to_remove = random.randint(40, 60)
         puzzle = create_puzzle(solution, num_cells_to_remove)
-        if puzzle is not False:  # Change made here
-            puz_gen = False
-    return puzzle, solution
+        if puzzle is not False:
+            puzzle_str = np.array2string(puzzle, separator=',')
+            if puzzle_str not in used_puzzles:
+                used_puzzles.add(puzzle_str)
+                return puzzle, solution
+    return None, None
 
 def save_sudoku_puzzles(filename, num_puzzles=100):
     count = 0
     puzzles = []
     solutions = []
+    used_puzzles = set()
     
     for _ in range(num_puzzles):
         try:
-            try:
-                puzzle, solution = generate_single_puzzle()
+            puzzle, solution = generate_single_puzzle(used_puzzles)
+            if puzzle is not None:
                 puzzles.append(puzzle.tolist())
                 solutions.append(solution.tolist())
 
                 count += 1
                 print(f"Sudoku Board Generated: {count}", end="\r", flush=True)
-            except KeyboardInterrupt:
-                break
+        except KeyboardInterrupt:
+            break
         except Exception as e:
             print(f"Failed to generate puzzle: {e}")
             continue
