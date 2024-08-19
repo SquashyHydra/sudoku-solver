@@ -58,42 +58,43 @@ def create_puzzle(solution, num_cells_to_remove, max_attempts=20):
             removed_cells.add((row, col))
             puzzle[row][col] = 0
         
+        # Debug information
+        print(f"Attempt {attempt + 1}: Removed {num_cells_to_remove} cells")
+        
         # Ensure the puzzle has a solution count between 2 and 6
-        if has_solution_count_in_range(puzzle):
+        solution_count = count_solutions(puzzle)
+        print(f"Solution count: {solution_count}")
+        if 2 <= solution_count <= 6:
             return puzzle
         
     raise Exception("Failed to create a puzzle with the desired number of solutions after several attempts")
 
-def has_solution_count_in_range(puzzle, min_count=2, max_count=6):
-    def count_solutions(board):
-        solutions_count = [0]  # Use a mutable object to count solutions
+def count_solutions(puzzle):
+    solutions_count = [0]  # Use a mutable object to count solutions
 
-        def count(board):
-            if solutions_count[0] > max_count:  # Early exit if more than max_count solutions is found
-                return
-            for row in range(9):
-                for col in range(9):
-                    if board[row][col] == 0:
-                        for num in range(1, 10):
-                            if is_valid(board, row, col, num):
-                                board[row][col] = num
-                                count(board)
-                                board[row][col] = 0
-                        return
-            solutions_count[0] += 1
+    def count(board):
+        if solutions_count[0] > 6:  # Early exit if more than 6 solutions is found
+            return
+        for row in range(9):
+            for col in range(9):
+                if board[row][col] == 0:
+                    for num in range(1, 10):
+                        if is_valid(board, row, col, num):
+                            board[row][col] = num
+                            count(board)
+                            board[row][col] = 0
+                    return
+        solutions_count[0] += 1
 
-        count(puzzle.copy())
-        return solutions_count[0]
-
-    count = count_solutions(puzzle)
-    return min_count <= count <= max_count
+    count(puzzle.copy())
+    return solutions_count[0]
 
 def generate_single_puzzle():
-    print(f"Generating Solution      ")
+    print(f"Generating Solution    ")
     solution = generate_solution()
     print('\033[F\033[F')
     num_cells_to_remove = random.randint(40, 60)
-    print(f"Creating Puzzle       ")
+    print(f"Creating Puzzle         ")
     puzzle = create_puzzle(solution, num_cells_to_remove)
     print('\033[F\033[F')
     return puzzle, solution
