@@ -5,12 +5,14 @@ from PIL import Image, ImageDraw, ImageFont
 
 # Create directories for each digit
 dataset_path = "sudoku_dataset"
+font_path = f"fonts/Arial.ttf"
+
 os.makedirs(dataset_path, exist_ok=True)
 for i in range(10):
     os.makedirs(os.path.join(dataset_path, str(i)), exist_ok=True)
 
 # Function to generate synthetic digit images
-def generate_sudoku_digit(digit, font_path='arial.ttf', size=28, save_path=None):
+def generate_sudoku_digit(digit, font_path=font_path, size=28, save_path=None):
     image = Image.new('L', (size, size), color=255)  # White background
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(font_path, size - 4)
