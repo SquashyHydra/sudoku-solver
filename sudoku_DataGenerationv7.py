@@ -3,7 +3,6 @@ import json
 import random
 
 def is_valid(board, row, col, num):
-    # Check if num is not in the current row, column, and 3x3 box
     if num in board[row]:
         return False
     if num in board[:, col]:
@@ -14,7 +13,6 @@ def is_valid(board, row, col, num):
     return True
 
 def solve(board):
-    # Solve Sudoku using a backtracking algorithm
     empty = find_empty_location(board)
     if not empty:
         return True
@@ -28,7 +26,6 @@ def solve(board):
     return False
 
 def find_empty_location(board):
-    # Find the next empty location
     for row in range(9):
         for col in range(9):
             if board[row][col] == 0:
@@ -36,7 +33,6 @@ def find_empty_location(board):
     return None
 
 def count_solutions(board):
-    # Count solutions to ensure the puzzle has a unique solution
     solutions_count = [0]
     
     def count(board):
@@ -58,7 +54,6 @@ def count_solutions(board):
     return solutions_count[0]
 
 def generate_solution():
-    # Generate a solved Sudoku board using a modified backtracking approach
     board = np.zeros((9, 9), dtype=int)
     nums = list(range(1, 10))
     
@@ -75,7 +70,6 @@ def generate_solution():
     return board
 
 def create_puzzle(solution, num_cells_to_remove):
-    # Create a puzzle by removing cells from the solution
     puzzle = solution.copy()
     cells = [(i, j) for i in range(9) for j in range(9)]
     random.shuffle(cells)
@@ -84,14 +78,13 @@ def create_puzzle(solution, num_cells_to_remove):
         row, col = cells[i]
         puzzle[row][col] = 0
     
-    # Ensure the puzzle has a unique solution
-    if count_solutions(puzzle) != 1:
+    # Ensure the puzzle has a unique solution and no empty cells
+    if count_solutions(puzzle) != 1 or np.any(puzzle == 0):
         return False
 
     return puzzle
 
 def generate_single_puzzle(used_puzzles):
-    # Generate a single puzzle ensuring uniqueness
     while True:
         solution = generate_solution()
         if solution is not False:
