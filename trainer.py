@@ -5,6 +5,32 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropou
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+dataset_path = "sudoku_dataset"
+
+img_size = (28, 28)
+batch_size = 32
+
+# Prepare the data generator
+datagen = ImageDataGenerator(rescale=1./255, validation_split=0.1)
+
+train_generator = datagen.flow_from_directory(
+    dataset_path,
+    target_size=img_size,
+    color_mode='grayscale',
+    batch_size=batch_size,
+    class_mode='categorical',
+    subset='training'
+)
+
+validation_generator = datagen.flow_from_directory(
+    dataset_path,
+    target_size=img_size,
+    color_mode='grayscale',
+    batch_size=batch_size,
+    class_mode='categorical',
+    subset='validation'
+)
+
 # Load MNIST data
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -44,7 +70,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Train model with data augmentation
-model.fit(datagen.flow(x_train, y_train, batch_size=32),
+model.fit(datagen.flow(x_train, y_train, batch_size=batch_size),
           validation_data=(x_test, y_test),
           epochs=10)
 
