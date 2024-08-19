@@ -4,7 +4,7 @@ import tensorflow as tf
 class SudokuAI:
     def __init__(self, grid):
         self.grid = grid
-        self.model = tf.keras.models.load_model('sudoku_ai_modelv2.keras')  # Load the trained model
+        self.model = tf.keras.models.load_model('sudoku_solver_modelv2.keras')  # Load the trained model
 
     def predict_next_move(self, grid):
         flattened_grid = np.array(grid).flatten().reshape(1, -1)
