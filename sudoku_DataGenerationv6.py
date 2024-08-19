@@ -28,7 +28,7 @@ def solve(board):
     return True
 
 def generate_solution():
-    print(f"Generating Solution\n", end='\r', flush=True)
+    print(f"Generating Solution")
     board = np.zeros((9, 9), dtype=int)
     
     # Fill the diagonal 3x3 boxes to start
@@ -46,6 +46,7 @@ def generate_solution():
     return board
 
 def create_puzzle(solution, num_cells_to_remove, max_attempts=10):
+    print(f"Creating Puzzle")
     for attempt in range(max_attempts):
         puzzle = solution.copy()
         cells = list((i, j) for i in range(9) for j in range(9))
@@ -90,8 +91,10 @@ def has_unique_solution(puzzle, removed_cells):
 
 def generate_single_puzzle():
     solution = generate_solution()
+    print('\033[F\033[F')
     num_cells_to_remove = random.randint(40, 60)
     puzzle = create_puzzle(solution, num_cells_to_remove)
+    print('\033[F\033[F')
     return puzzle, solution
 
 def save_sudoku_data(filename, num_puzzles=100):
