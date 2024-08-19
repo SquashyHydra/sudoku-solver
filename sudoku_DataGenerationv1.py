@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 class Sudoku_DataGeneration:
     def __init__(self):
@@ -9,11 +10,10 @@ class Sudoku_DataGeneration:
         for _ in range(n_samples):
             grid = self.generate_sudoku_grid()
             self.solve(grid, collect_data=True)
+        self.save_data_to_file('sudoku_data.json')
 
     def generate_sudoku_grid(self):
         grid = np.zeros((9, 9), dtype=int)
-        # Randomly fill some cells with valid numbers for a starting grid
-        # (This step is simplified and could involve more sophisticated methods)
         for _ in range(np.random.randint(10, 20)):
             row, col = np.random.randint(0, 9, size=2)
             num = np.random.randint(1, 10)
@@ -36,7 +36,7 @@ class Sudoku_DataGeneration:
             if self.is_valid_move(grid, num, row, col):
                 grid[row][col] = num
                 if collect_data:
-                    self.data.append(grid.flatten())
+                    self.data.append(grid.flatten().tolist())
                     self.labels.append(num)
                 if self.solve(grid, collect_data):
                     return True
@@ -44,5 +44,18 @@ class Sudoku_DataGeneration:
 
         return False
 
+    def find_empty_cell(self, grid):
+        for i in range(9):
+            for j in range(9):
+                if grid[i][j] == 0:
+                    return (i, j)
+        return None
+
+    def save_data_to_file(self, filename):
+        with open(filename, 'w') as file:
+            json.dump({'data': self.data, 'labels': self.labels}, file)
+
 # Example Usage
-Sudoku_DataGeneration.generate_sudoku_data(n_samples=10000)  # Generate synthetic data
+if __name__ == "__main__":
+    generator = Sudoku_DataGeneration()
+    generator.generate_sudoku_data(n_samples=10000)  # Generate synthetic data and save to file
