@@ -96,7 +96,8 @@ def save_sudoku_data(filename, num_puzzles=100):
         while True:
             try:
                 with Pool(processes=cpu_count()) as pool:
-                    results = pool.map(generate_single_puzzle, range(num_puzzles))
+                    results = [pool.apply_async(generate_single_puzzle) for _ in range(num_puzzles)]
+                    results = [r.get() for r in results]  # Wait for all results
 
                 puzzles, solutions = zip(*results)
                 counter += 1
@@ -125,7 +126,8 @@ def continuously_generate_sudoku_puzzles(filename):
         while True:
             try:
                 with Pool(processes=cpu_count()) as pool:
-                    results = pool.map(generate_single_puzzle, range(10))  # Generate 10 puzzles at a time
+                    results = [pool.apply_async(generate_single_puzzle) for _ in range(10)]
+                    results = [r.get() for r in results]  # Wait for all results
 
                 new_puzzles, new_solutions = zip(*results)
                 puzzles.extend(new_puzzles)
