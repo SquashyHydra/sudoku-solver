@@ -45,6 +45,7 @@ def generate_solution():
     return board
 
 def create_puzzle(solution, num_cells_to_remove):
+    print(f'Creating Puzzle', end='\r', flush=True)
     puzzle = solution.copy()
     cells = list((i, j) for i in range(9) for j in range(9))
     random.shuffle(cells)
