@@ -2,7 +2,8 @@ from random import randint, shuffle
 import json
 
 # Initialize empty 9 by 9 grid
-grid = [[0 for _ in range(9)] for _ in range(9)]
+def create_empty_grid():
+    return [[0 for _ in range(9)] for _ in range(9)]
 
 # A function to check if the grid is full
 def checkGrid(grid):
@@ -12,9 +13,8 @@ def checkGrid(grid):
                 return False
     return True
 
-# A backtracking/recursive function to check all possible combinations of numbers until a solution is found
+# A backtracking/recursive function to solve the grid
 def solveGrid(grid):
-    global counter
     for i in range(81):
         row = i // 9
         col = i % 9
@@ -26,18 +26,16 @@ def solveGrid(grid):
                         if not value in [num for sublist in square for num in sublist]:
                             grid[row][col] = value
                             if checkGrid(grid):
-                                counter += 1
-                                break
+                                return True
                             else:
                                 if solveGrid(grid):
                                     return True
             break
     grid[row][col] = 0
 
-numberList = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
 # A backtracking/recursive function to fill the grid
 def fillGrid(grid):
+    numberList = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     for i in range(81):
         row = i // 9
         col = i % 9
@@ -57,32 +55,40 @@ def fillGrid(grid):
             break
     grid[row][col] = 0
 
-# Generate a fully solved grid
-fillGrid(grid)
-
-# Start removing numbers one by one to create a Sudoku puzzle
-attempts = 5
-counter = 1
-while attempts > 0:
-    row = randint(0, 8)
-    col = randint(0, 8)
-    while grid[row][col] == 0:
+# Function to create a Sudoku puzzle
+def create_puzzle(grid, attempts=5):
+    while attempts > 0:
         row = randint(0, 8)
         col = randint(0, 8)
-    backup = grid[row][col]
-    grid[row][col] = 0
+        while grid[row][col] == 0:
+            row = randint(0, 8)
+            col = randint(0, 8)
+        backup = grid[row][col]
+        grid[row][col] = 0
 
-    copyGrid = [row.copy() for row in grid]
-    counter = 0
-    solveGrid(copyGrid)
-    if counter != 1:
-        grid[row][col] = backup
-        attempts -= 1
+        copyGrid = [r.copy() for r in grid]
+        counter = 0
+        if not solveGrid(copyGrid):
+            grid[row][col] = backup
+            attempts -= 1
+    return grid
 
-print("Sudoku Grid Ready")
+# Generate and save multiple unique Sudoku puzzles and solutions
+def generate_sudoku_puzzles(num_puzzles):
+    puzzles_and_solutions = []
+    for _ in range(num_puzzles):
+        grid = create_empty_grid()
+        fillGrid(grid)
+        solution = [row.copy() for row in grid]
+        puzzle = create_puzzle(grid)
 
-# Save the final grid to a JSON file
-with open('sudoku_grid.json', 'w') as json_file:
-    json.dump(grid, json_file)
+        puzzles_and_solutions.append({"puzzle": puzzle, "solution": solution})
+    
+    with open('sudoku_puzzles.json', 'w') as json_file:
+        json.dump(puzzles_and_solutions, json_file)
 
-print("Grid saved to sudoku_grid.json")
+    print(f"{num_puzzles} Sudoku puzzles saved to sudoku_puzzles.json")
+
+# Number of Sudoku puzzles to generate
+num_puzzles = 3
+generate_sudoku_puzzles(num_puzzles)
