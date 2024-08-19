@@ -28,7 +28,6 @@ def solve(board):
     return True
 
 def generate_solution():
-    print(f"Generating Solution")
     board = np.zeros((9, 9), dtype=int)
     
     # Fill the diagonal 3x3 boxes to start
@@ -46,7 +45,6 @@ def generate_solution():
     return board
 
 def create_puzzle(solution, num_cells_to_remove, max_attempts=10):
-    print(f"Creating Puzzle")
     for attempt in range(max_attempts):
         puzzle = solution.copy()
         cells = list((i, j) for i in range(9) for j in range(9))
@@ -60,18 +58,18 @@ def create_puzzle(solution, num_cells_to_remove, max_attempts=10):
             removed_cells.add((row, col))
             puzzle[row][col] = 0
         
-        # Ensure the puzzle has a unique solution
-        if has_unique_solution(puzzle, removed_cells):
+        # Ensure the puzzle has a solution count between 2 and 6
+        if has_solution_count_in_range(puzzle, removed_cells, min_count=2, max_count=6):
             return puzzle
         
-    raise Exception("Failed to create a puzzle with a unique solution after several attempts")
+    raise Exception("Failed to create a puzzle with the desired number of solutions after several attempts")
 
-def has_unique_solution(puzzle, removed_cells):
+def has_solution_count_in_range(puzzle, removed_cells, min_count, max_count):
     def count_solutions(board):
         solutions_count = [0]  # Use a mutable object to count solutions
 
         def count(board):
-            if solutions_count[0] > 1:  # Early exit if more than one solution is found
+            if solutions_count[0] > max_count:  # Early exit if more than max_count solutions is found
                 return
             for row in range(9):
                 for col in range(9):
@@ -87,12 +85,15 @@ def has_unique_solution(puzzle, removed_cells):
         count(puzzle.copy())
         return solutions_count[0]
 
-    return count_solutions(puzzle) == 1
+    count = count_solutions(puzzle)
+    return min_count <= count <= max_count
 
 def generate_single_puzzle():
+    print(f"Generating Solution")
     solution = generate_solution()
     print('\033[F\033[F')
     num_cells_to_remove = random.randint(40, 60)
+    print(f"Creating Puzzle")
     puzzle = create_puzzle(solution, num_cells_to_remove)
     print('\033[F\033[F')
     return puzzle, solution
