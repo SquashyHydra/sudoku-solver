@@ -4,12 +4,12 @@ import tensorflow as tf
 class SudokuAI:
     def __init__(self, grid):
         self.grid = grid
-        self.model = tf.keras.models.load_model('sudoku_ai_model.keras')  # Load the trained model
+        self.model = tf.keras.models.load_model('sudoku_ai_modelv2.keras')  # Load the trained model
 
     def predict_next_move(self, grid):
         flattened_grid = np.array(grid).flatten().reshape(1, -1)
         prediction = self.model.predict(flattened_grid)
-        return prediction.reshape((9, 9))  # Reshape prediction to a 9x9 grid
+        return prediction.reshape((9, 9))  # Reshape prediction to a 9x9 grids
 
     def find_empty_cell(self):
         for i in range(9):
