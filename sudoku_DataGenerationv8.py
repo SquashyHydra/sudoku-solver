@@ -96,8 +96,7 @@ def generate_single_puzzle(used_puzzles, lock, puzzle_counter):
                 with lock:
                     if puzzle_str not in used_puzzles:
                         used_puzzles.append(puzzle_str)
-                        with puzzle_counter.get_lock():  # Use the lock directly
-                            puzzle_counter.value += 1
+                        puzzle_counter.value += 1
                         return puzzle, solution
 
 def worker(used_puzzles, lock, return_dict, puzzle_counter):
