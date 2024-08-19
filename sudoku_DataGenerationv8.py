@@ -103,7 +103,7 @@ def worker(used_puzzles, lock, return_dict, puzzle_counter):
     puzzles = []
     solutions = []
     count = 0
-    while count < 10:  # Adjust the number of puzzles per worker
+    while puzzle_counter.value < 1000:  # Stop when 1000 puzzles are generated
         puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
         if puzzle is not None:
             puzzles.append(puzzle.tolist())
@@ -111,7 +111,7 @@ def worker(used_puzzles, lock, return_dict, puzzle_counter):
             count += 1
     return_dict[mp.current_process().name] = (puzzles, solutions)
 
-def save_sudoku_puzzles(filename, num_puzzles=100):
+def save_sudoku_puzzles(filename, num_puzzles=1000):
     manager = mp.Manager()
     used_puzzles = manager.list()
     lock = manager.Lock()
