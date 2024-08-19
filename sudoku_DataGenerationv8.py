@@ -2,6 +2,7 @@ import numpy as np
 import json
 import random
 import multiprocessing as mp
+import time
 
 def is_valid(board, row, col, num):
     if num in board[row]:
@@ -84,7 +85,7 @@ def has_unique_solution(puzzle):
 
     return count_solutions(puzzle) == 1
 
-def generate_single_puzzle(used_puzzles, lock):
+def generate_single_puzzle(used_puzzles, lock, puzzle_counter):
     while True:
         solution = generate_solution()
         if solution is not False:
@@ -95,14 +96,16 @@ def generate_single_puzzle(used_puzzles, lock):
                 with lock:
                     if puzzle_str not in used_puzzles:
                         used_puzzles.append(puzzle_str)
+                        with puzzle_counter.get_lock():
+                            puzzle_counter.value += 1
                         return puzzle, solution
 
-def worker(used_puzzles, lock, return_dict):
+def worker(used_puzzles, lock, return_dict, puzzle_counter):
     puzzles = []
     solutions = []
     count = 0
     while count < 10:  # Adjust the number of puzzles per worker
-        puzzle, solution = generate_single_puzzle(used_puzzles, lock)
+        puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
         if puzzle is not None:
             puzzles.append(puzzle.tolist())
             solutions.append(solution.tolist())
@@ -114,15 +117,22 @@ def save_sudoku_puzzles(filename, num_puzzles=100):
     used_puzzles = manager.list()
     lock = manager.Lock()
     return_dict = manager.dict()
+    puzzle_counter = manager.Value('i', 0)  # Shared integer for counting puzzles
     
     processes = []
     num_workers = mp.cpu_count()  # Number of processes to run in parallel
     
     # Create worker processes
     for _ in range(num_workers):
-        p = mp.Process(target=worker, args=(used_puzzles, lock, return_dict))
+        p = mp.Process(target=worker, args=(used_puzzles, lock, return_dict, puzzle_counter))
         processes.append(p)
         p.start()
+    
+    # Monitor the progress
+    while any(p.is_alive() for p in processes):
+        with puzzle_counter.get_lock():
+            print(f"Number of puzzles generated: {puzzle_counter.value}", end="\r", flush=True)
+        time.sleep(1)  # Update every second
     
     # Wait for all worker processes to finish
     for p in processes:
