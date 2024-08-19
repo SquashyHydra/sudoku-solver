@@ -58,16 +58,13 @@ def create_puzzle(solution, num_cells_to_remove, max_attempts=20):
             removed_cells.add((row, col))
             puzzle[row][col] = 0
         
-        # Debug information
-        print(f"Attempt {attempt + 1}: Removed {num_cells_to_remove} cells")
-        
-        # Ensure the puzzle has a solution count between 2 and 6
+        # Ensure the puzzle has at least 3 solutions
         solution_count = count_solutions(puzzle)
-        print(f"Solution count: {solution_count}")
-        if solution_count <= 6:
+
+        if solution_count >= 3:
             return puzzle
         
-    raise Exception("Failed to create a puzzle with the desired number of solutions after several attempts")
+    raise Exception("Failed to create a puzzle with at least 3 solutions after several attempts")
 
 def count_solutions(puzzle):
     solutions_count = [0]  # Use a mutable object to count solutions
@@ -90,10 +87,8 @@ def count_solutions(puzzle):
     return solutions_count[0]
 
 def generate_single_puzzle():
-    print("Generating Solution")
     solution = generate_solution()
     num_cells_to_remove = random.randint(40, 60)
-    print("Creating Puzzle")
     puzzle = create_puzzle(solution, num_cells_to_remove)
     return puzzle, solution
 
