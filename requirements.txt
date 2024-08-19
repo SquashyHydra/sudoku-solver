@@ -1,4 +1,3 @@
 numpy
-pytesseract
 pillow
 tensorflow[and-cuda]
