@@ -31,24 +31,6 @@ validation_generator = datagen.flow_from_directory(
     subset='validation'
 )
 
-# Load MNIST data
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-# Reshape data to add a channel dimension
-x_train = x_train.reshape(-1, 28, 28, 1).astype('float32') / 255.0
-x_test = x_test.reshape(-1, 28, 28, 1).astype('float32') / 255.0
-y_train = to_categorical(y_train, 10)
-y_test = to_categorical(y_test, 10)
-
-# Data augmentation
-datagen = ImageDataGenerator(
-    rotation_range=10,
-    zoom_range=0.1,
-    width_shift_range=0.1,
-    height_shift_range=0.1
-)
-datagen.fit(x_train)
-
 # Build CNN model
 model = Sequential([
     Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
@@ -69,14 +51,18 @@ model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-# Train model with data augmentation
-model.fit(datagen.flow(x_train, y_train, batch_size=batch_size),
-          validation_data=(x_test, y_test),
-          epochs=10)
+# Train model
+model.fit(
+    train_generator,
+    steps_per_epoch=train_generator.samples // batch_size,
+    validation_data=validation_generator,
+    validation_steps=validation_generator.samples // batch_size,
+    epochs=10
+)
 
 # Evaluate model
-loss, accuracy = model.evaluate(x_test, y_test)
-print(f"Test accuracy: {accuracy:.4f}")
+#loss, accuracy = model.evaluate(x_test, y_test)
+#print(f"Test accuracy: {accuracy:.4f}")
 
 # Save model
 model.save('mnist_cnn_model.keras')
