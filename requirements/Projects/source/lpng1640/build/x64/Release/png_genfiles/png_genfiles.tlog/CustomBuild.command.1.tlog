@@ -1,0 +1,18 @@
+^F:\SUDOKU-SOLVER\REQUIREMENTS\LPNG1640\BUILD\CMAKEFILES\EC8151B62B94ABAACD3978FFAC1E7C64\PNG_GENFILES.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^F:\SUDOKU-SOLVER\REQUIREMENTS\LPNG1640\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SF:/sudoku-solver/requirements/lpng1640 -BF:/sudoku-solver/requirements/lpng1640/build --check-stamp-file F:/sudoku-solver/requirements/lpng1640/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

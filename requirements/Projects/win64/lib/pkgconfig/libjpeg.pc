@@ -1,0 +1,10 @@
+prefix=F:/sudoku-solver/requirements/Projects/win64
+exec_prefix=F:/sudoku-solver/requirements/Projects/win64
+libdir=F:/sudoku-solver/requirements/Projects/win64/lib
+includedir=F:/sudoku-solver/requirements/Projects/win64/include
+
+Name: libjpeg
+Description: A SIMD-accelerated JPEG codec that provides the libjpeg API
+Version: 3.0.4
+Libs: -L${libdir} -ljpeg
+Cflags: -I${includedir}

@@ -1,0 +1,10 @@
+^F:\SUDOKU-SOLVER\REQUIREMENTS\LPNG1640\BUILD\CMAKEFILES\EC8151B62B94ABAACD3978FFAC1E7C64\INSTALL_FORCE.RULE
+setlocal
+cd .
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

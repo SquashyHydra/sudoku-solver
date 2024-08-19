@@ -1,0 +1,12 @@
+F:/sudoku-solver/requirements/Projects/win64/lib/libpng16_static.lib
+F:/sudoku-solver/requirements/Projects/win64/include/png.h
+F:/sudoku-solver/requirements/Projects/win64/include/pngconf.h
+F:/sudoku-solver/requirements/Projects/win64/include/pnglibconf.h
+F:/sudoku-solver/requirements/Projects/win64/include/libpng16/png.h
+F:/sudoku-solver/requirements/Projects/win64/include/libpng16/pngconf.h
+F:/sudoku-solver/requirements/Projects/win64/include/libpng16/pnglibconf.h
+F:/sudoku-solver/requirements/Projects/win64/share/man/man3/libpng.3
+F:/sudoku-solver/requirements/Projects/win64/share/man/man3/libpngpf.3
+F:/sudoku-solver/requirements/Projects/win64/share/man/man5/png.5
+F:/sudoku-solver/requirements/Projects/win64/lib/libpng/libpng16.cmake
+F:/sudoku-solver/requirements/Projects/win64/lib/libpng/libpng16-release.cmake

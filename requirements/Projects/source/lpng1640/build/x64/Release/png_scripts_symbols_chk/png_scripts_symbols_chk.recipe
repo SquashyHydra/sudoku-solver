@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>F:\sudoku-solver\requirements\lpng1640\build\x64\Release\ZERO_CHECK</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>F:\sudoku-solver\requirements\lpng1640\build\x64\Release\png_scripts_symbols_out</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>F:\sudoku-solver\requirements\lpng1640\build\x64\Release\png_scripts_symbols_chk</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles />
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

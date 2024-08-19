@@ -1,0 +1,5 @@
+Include:
+PATH ("F:\sudoku-solver\requirements\Projects\win64\bin")
+
+Create:
+TESSDATA_PREFIX (F:\sudoku-solver\requirements\Projects\win64\share)
