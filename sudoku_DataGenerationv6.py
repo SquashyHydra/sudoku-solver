@@ -81,7 +81,7 @@ def has_unique_solution(puzzle, removed_cells):
                                 board[row][col] = 0
                         return
             solutions_count[0] += 1
-
+        print(f'Unique Solution', end='\r', flush=True)
         count(puzzle.copy())
         return solutions_count[0]
 
