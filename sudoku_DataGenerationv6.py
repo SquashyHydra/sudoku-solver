@@ -97,18 +97,21 @@ def save_sudoku_puzzles(filename, num_puzzles=100):
     
     for _ in range(num_puzzles):
         try:
-            puzzle, solution = generate_single_puzzle()
-            puzzles.append(puzzle.tolist())
-            solutions.append(solution.tolist())
+            try:
+                puzzle, solution = generate_single_puzzle()
+                puzzles.append(puzzle.tolist())
+                solutions.append(solution.tolist())
 
-            count += 1
-            print(f"SudoKku Board Generated: {count}", end="\r", flush=True)
+                count += 1
+                print(f"SudoKku Board Generated: {count}", end="\r", flush=True)
+            except KeyboardInterrupt:
+                break
         except Exception as e:
             print(f"Failed to generate puzzle: {e}")
             continue
-    
-    with open(filename, 'w') as file:
-        json.dump({'puzzles': puzzles, 'solutions': solutions}, file)
+        finally:
+            with open(filename, 'w') as file:
+                json.dump({'puzzles': puzzles, 'solutions': solutions}, file)
 
 if __name__ == "__main__":
     save_sudoku_puzzles('sudoku_data.json', num_puzzles=1000)  # Generate and save puzzles
