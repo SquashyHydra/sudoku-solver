@@ -47,11 +47,17 @@ def extract_cells_from_grid(thresh):
     
     return np.array(cells)
 
-def predict_digits(cells, model):
-    cells = cells.astype('float32') / 255.0
-    cells = np.expand_dims(cells, axis=-1)
-    predictions = model.predict(cells)
-    digits = np.argmax(predictions, axis=1)
+def predict_digits(cells, model, blank_threshold=50):
+    digits = []
+    for cell in cells:
+        if np.mean(cell) < blank_threshold:  # If the cell is mostly blank
+            digits.append(0)
+        else:
+            cell = cell.astype('float32') / 255.0
+            cell = np.expand_dims(cell, axis=-1)
+            prediction = model.predict(np.array([cell]))
+            digit = np.argmax(prediction, axis=1)[0]
+            digits.append(digit)
     return digits
 
 def reconstruct_sudoku_grid(digits, grid_size=9):
