@@ -84,7 +84,7 @@ def has_unique_solution(puzzle):
 
     return count_solutions(puzzle) == 1
 
-def generate_single_puzzle(used_puzzles):
+def generate_single_puzzle(used_puzzles, lock):
     while True:
         solution = generate_solution()
         if solution is not False:
@@ -92,16 +92,17 @@ def generate_single_puzzle(used_puzzles):
             puzzle = create_puzzle(solution, num_cells_to_remove)
             if has_unique_solution(puzzle):
                 puzzle_str = np.array2string(puzzle, separator=',')
-                if puzzle_str not in used_puzzles:
-                    used_puzzles.add(puzzle_str)
-                    return puzzle, solution
+                with lock:
+                    if puzzle_str not in used_puzzles:
+                        used_puzzles.append(puzzle_str)
+                        return puzzle, solution
 
-def worker(used_puzzles, return_dict):
+def worker(used_puzzles, lock, return_dict):
     puzzles = []
     solutions = []
     count = 0
     while count < 10:  # Adjust the number of puzzles per worker
-        puzzle, solution = generate_single_puzzle(used_puzzles)
+        puzzle, solution = generate_single_puzzle(used_puzzles, lock)
         if puzzle is not None:
             puzzles.append(puzzle.tolist())
             solutions.append(solution.tolist())
@@ -110,7 +111,8 @@ def worker(used_puzzles, return_dict):
 
 def save_sudoku_puzzles(filename, num_puzzles=100):
     manager = mp.Manager()
-    used_puzzles = manager.dict()
+    used_puzzles = manager.list()
+    lock = manager.Lock()
     return_dict = manager.dict()
     
     processes = []
@@ -118,7 +120,7 @@ def save_sudoku_puzzles(filename, num_puzzles=100):
     
     # Create worker processes
     for _ in range(num_workers):
-        p = mp.Process(target=worker, args=(used_puzzles, return_dict))
+        p = mp.Process(target=worker, args=(used_puzzles, lock, return_dict))
         processes.append(p)
         p.start()
     
