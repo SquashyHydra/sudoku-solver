@@ -3,8 +3,6 @@ import numpy as np
 import json
 
 def one_hot_encode(solutions):
-    # Convert solutions to one-hot encoded format
-    # solutions shape: (num_samples, 81)
     num_samples, num_cells = solutions.shape
     num_classes = 9
     y_encoded = np.zeros((num_samples, num_cells, num_classes))
@@ -37,14 +35,16 @@ def build_model():
         tf.keras.layers.InputLayer(input_shape=(81,)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(81 * 9, activation='softmax')  # Output probabilities for each of 9 digits per cell
+        tf.keras.layers.Dense(81 * 9),  # Output shape will be (81 * 9)
+        tf.keras.layers.Reshape((81, 9)),  # Reshape to (81, 9)
+        tf.keras.layers.Activation('softmax')  # Apply softmax for probability distribution
     ])
     
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 def train_and_save_model():
-    X_train, y_train = load_sudoku_data('sudoku_datav1.json')
+    X_train, y_train = load_sudoku_data('sudoku_datav2.json')
     
     model = build_model()
     model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1)
