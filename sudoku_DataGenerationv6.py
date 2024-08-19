@@ -14,7 +14,7 @@ def is_valid(board, row, col, num):
     return True
 
 def solve(board):
-    print(f'Solving Board', end='\r', flush=True)
+    print(f'Solving Board')
     for row in range(9):
         for col in range(9):
             if board[row][col] == 0:  # Empty cell
@@ -28,7 +28,7 @@ def solve(board):
     return True
 
 def generate_solution():
-    print(f"Generating Solution", end="\r", flush=True)
+    print(f"Generating Solution")
     board = np.zeros((9, 9), dtype=int)
     
     # Fill the diagonal 3x3 boxes to start
@@ -46,7 +46,7 @@ def generate_solution():
     return board
 
 def create_puzzle(solution, num_cells_to_remove):
-    print(f'Creating Puzzle', end='\r', flush=True)
+    print(f'Creating Puzzle')
     puzzle = solution.copy()
     cells = list((i, j) for i in range(9) for j in range(9))
     random.shuffle(cells)
@@ -82,7 +82,7 @@ def has_unique_solution(puzzle, removed_cells):
                                 board[row][col] = 0
                         return
             solutions_count[0] += 1
-        print(f'Unique Solution', end='\r', flush=True)
+        print(f'Unique Solution')
         count(puzzle.copy())
         return solutions_count[0]
 
