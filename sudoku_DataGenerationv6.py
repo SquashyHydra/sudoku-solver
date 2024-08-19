@@ -103,7 +103,7 @@ def save_sudoku_puzzles(filename, num_puzzles=100):
                 solutions.append(solution.tolist())
 
                 count += 1
-                print(f"SudoKku Board Generated: {count}", end="\r", flush=True)
+                print(f"Sudoku Board Generated: {count}", end="\r", flush=True)
             except KeyboardInterrupt:
                 break
         except Exception as e:
