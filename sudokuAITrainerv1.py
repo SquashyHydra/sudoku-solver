@@ -24,7 +24,7 @@ def build_model():
 
 # Train the model
 def train_model():
-    X_train, y_train = load_sudoku_data('sudoku_puzzles.json')
+    X_train, y_train = load_sudoku_data('sudoku_datav1.json')
     model = build_model()
     model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
     model.save('sudoku_ai_model.keras')  # Save the model

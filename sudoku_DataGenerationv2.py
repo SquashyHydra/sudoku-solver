@@ -26,32 +26,44 @@ def create_sudoku():
                     return False
         return True
 
-    board = np.zeros((9, 9), dtype=int)
-    
-    for i in range(0, 9, 3):
-        nums = list(range(1, 10))
-        random.shuffle(nums)
-        for r in range(3):
-            for c in range(3):
-                board[i + r][i + c] = nums.pop()
-    
-    if not solve(board):
-        raise Exception("Failed to generate a valid Sudoku board")
+    def generate_solution():
+        board = np.zeros((9, 9), dtype=int)
+        for i in range(0, 9, 3):
+            nums = list(range(1, 10))
+            random.shuffle(nums)
+            for r in range(3):
+                for c in range(3):
+                    board[i + r][i + c] = nums.pop()
+        if not solve(board):
+            raise Exception("Failed to generate a valid Sudoku board")
+        return board
 
+    solution = generate_solution()
+    puzzle = solution.copy()
     num_cells_to_remove = random.randint(40, 60)
     cells = list((i, j) for i in range(9) for j in range(9))
     random.shuffle(cells)
     for i in range(num_cells_to_remove):
         row, col = cells[i]
-        board[row][col] = 0
+        puzzle[row][col] = 0
+    return puzzle, solution
 
-    return board
-
-def save_sudoku_puzzles(filename, num_puzzles=100):
-    puzzles = [create_sudoku().tolist() for _ in range(num_puzzles)]
+def save_sudoku_data(filename, num_puzzles=100):
+    puzzles = []
+    solutions = []
+    for _ in range(num_puzzles):
+        puzzle, solution = create_sudoku()
+        puzzles.append(puzzle.flatten().tolist())
+        solutions.append(solution.flatten().tolist())
+    
+    data = {
+        'puzzles': puzzles,
+        'solutions': solutions
+    }
+    
     with open(filename, 'w') as file:
-        json.dump(puzzles, file)
+        json.dump(data, file)
 
 # Example Usage
 if __name__ == "__main__":
-    save_sudoku_puzzles('sudoku_puzzles.json', num_puzzles=1000)  # Generate and save puzzles
+    save_sudoku_data('sudoku_datav1.json', num_puzzles=1000)  # Generate and save puzzles and solutions
