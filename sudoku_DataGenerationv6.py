@@ -14,6 +14,7 @@ def is_valid(board, row, col, num):
     return True
 
 def solve(board):
+    print(f'Solving Board', end='\r', flush=True)
     for row in range(9):
         for col in range(9):
             if board[row][col] == 0:  # Empty cell
