@@ -22,6 +22,18 @@ class Sudoku_DataGeneration:
         return grid
 
     def is_valid_move(self, grid, num, row, col):
+        # Check if num is not in the current row
+        if num in grid[row]:
+            return False
+        # Check if num is not in the current column
+        if num in grid[:, col]:
+            return False
+        # Check if num is not in the current 3x3 box
+        box_row, box_col = 3 * (row // 3), 3 * (col // 3)
+        if num in grid[box_row:box_row + 3, box_col:box_col + 3]:
+            return False
+        
+        return True
         # Check row, column, and box
         return (num not in grid[row] and
                 num not in grid[:, col] and
