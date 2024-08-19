@@ -24,10 +24,10 @@ def build_model():
 
 # Train the model
 def train_model():
-    X_train, y_train = load_sudoku_data('sudoku_data.json')
+    X_train, y_train = load_sudoku_data('sudoku_puzzles.json')
     model = build_model()
     model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
-    model.save('sudoku_ai_model.h5')  # Save the model
+    model.save('sudoku_ai_model.keras')  # Save the model
 
 if __name__ == "__main__":
     train_model()
