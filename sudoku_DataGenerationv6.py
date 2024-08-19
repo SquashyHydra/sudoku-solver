@@ -92,34 +92,15 @@ def generate_single_puzzle():
     return puzzle, solution
 
 def save_sudoku_data(filename, num_puzzles=100):
-    with Pool(processes=cpu_count()) as pool:
-        results = pool.map(generate_single_puzzle, range(num_puzzles))
-
-    puzzles, solutions = zip(*results)
-
-    data = {
-        'puzzles': [p.flatten().tolist() for p in puzzles],
-        'solutions': [s.flatten().tolist() for s in solutions]
-    }
-    
-    with open(filename, 'w') as file:
-        json.dump(data, file)
-
-def continuously_generate_sudoku_puzzles(filename):
-    counter = 0
-    puzzles = []
-    solutions = []
-    
     try:
         while True:
             try:
-                solution = generate_solution()
-                num_cells_to_remove = random.randint(40, 60)
-                puzzle = create_puzzle(solution, num_cells_to_remove)
+                with Pool(processes=cpu_count()) as pool:
+                    results = pool.map(generate_single_puzzle, range(num_puzzles))
+
+                puzzles, solutions = zip(*results)
                 counter += 1
                 print(f"Generated puzzle number: {counter}", end="\r", flush=True)
-                puzzles.append(puzzle.flatten().tolist())
-                solutions.append(solution.flatten().tolist())
             except KeyboardInterrupt:
                 print(f"\nGeneration stopped. Total puzzles created: {counter}")
                 break
@@ -127,14 +108,42 @@ def continuously_generate_sudoku_puzzles(filename):
                 print(f"\nAn error occurred: {e}")
                 # Optionally continue generating if an error occurs
     finally:
-        # Save data to file
         data = {
-            'puzzles': puzzles,
-            'solutions': solutions
+            'puzzles': [p.flatten().tolist() for p in puzzles],
+            'solutions': [s.flatten().tolist() for s in solutions]
         }
+        
         with open(filename, 'w') as file:
             json.dump(data, file)
 
+def continuously_generate_sudoku_puzzles(filename):
+    counter = 0
+    
+    try:
+        while True:
+            try:
+                with Pool(processes=cpu_count()) as pool:
+                    results = pool.map(generate_single_puzzle, range(num_puzzles))
+
+                puzzles, solutions = zip(*results)
+                
+                counter += 1
+                print(f"Generated puzzle number: {counter}", end="\r", flush=True)
+            except KeyboardInterrupt:
+                print(f"\nGeneration stopped. Total puzzles created: {counter}")
+                break
+            except Exception as e:
+                print(f"\nAn error occurred: {e}")
+                # Optionally continue generating if an error occurs
+    finally:
+        data = {
+            'puzzles': [p.flatten().tolist() for p in puzzles],
+            'solutions': [s.flatten().tolist() for s in solutions]
+        }
+        
+        with open(filename, 'w') as file:
+            json.dump(data, file)
+            
 # Example Usage
 if __name__ == "__main__":
     #save_sudoku_data('sudoku_datav4.json', num_puzzles=1000)  # Generate and save puzzles and solutions
