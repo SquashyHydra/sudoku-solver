@@ -118,17 +118,30 @@ def save_sudoku_data(filename, num_puzzles=100):
 
 def continuously_generate_sudoku_puzzles(filename):
     counter = 0
+    puzzles = []
+    solutions = []
     
     try:
         while True:
             try:
                 with Pool(processes=cpu_count()) as pool:
-                    results = pool.map(generate_single_puzzle, range(num_puzzles))
+                    results = pool.map(generate_single_puzzle, range(10))  # Generate 10 puzzles at a time
 
-                puzzles, solutions = zip(*results)
+                new_puzzles, new_solutions = zip(*results)
+                puzzles.extend(new_puzzles)
+                solutions.extend(new_solutions)
                 
-                counter += 1
+                counter += len(new_puzzles)
                 print(f"Generated puzzle number: {counter}", end="\r", flush=True)
+                
+                # Optionally save periodically to avoid large memory usage
+                if counter % 100 == 0:
+                    data = {
+                        'puzzles': [p.flatten().tolist() for p in puzzles],
+                        'solutions': [s.flatten().tolist() for s in solutions]
+                    }
+                    with open(filename, 'w') as file:
+                        json.dump(data, file)
             except KeyboardInterrupt:
                 print(f"\nGeneration stopped. Total puzzles created: {counter}")
                 break
@@ -136,13 +149,13 @@ def continuously_generate_sudoku_puzzles(filename):
                 print(f"\nAn error occurred: {e}")
                 # Optionally continue generating if an error occurs
     finally:
+        # Save remaining puzzles and solutions before exiting
         data = {
             'puzzles': [p.flatten().tolist() for p in puzzles],
             'solutions': [s.flatten().tolist() for s in solutions]
         }
-        
         with open(filename, 'w') as file:
-            json.dump(data, file)
+            json.dump(data, file) 
 
 # Example Usage
 if __name__ == "__main__":
