@@ -68,6 +68,5 @@ cells = extract_cells_from_grid(thresh)
 digits = predict_digits(cells, model)
 sudoku_grid = reconstruct_sudoku_grid(digits)
 
-
 view = True
 if view: print(f"Extracted Numbers:\n{digits}\n");print("Sudoku grid:\n", sudoku_grid)
