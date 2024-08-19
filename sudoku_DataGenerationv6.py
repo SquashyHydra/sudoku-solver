@@ -90,11 +90,11 @@ def count_solutions(puzzle):
     return solutions_count[0]
 
 def generate_single_puzzle():
-    print(f"Generating Solution    ")
+    print(f"Generating Solution        ")
     solution = generate_solution()
     print('\033[F\033[F')
     num_cells_to_remove = random.randint(40, 60)
-    print(f"Creating Puzzle         ")
+    print(f"Creating Puzzle            ")
     puzzle = create_puzzle(solution, num_cells_to_remove)
     print('\033[F\033[F')
     return puzzle, solution
