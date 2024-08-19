@@ -8,11 +8,20 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 # Load MNIST data
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-# Preprocess data
-x_train = x_train.astype('float32') / 255.0
-x_test = x_test.astype('float32') / 255.0
+# Reshape data to add a channel dimension
+x_train = x_train.reshape(-1, 28, 28, 1).astype('float32') / 255.0
+x_test = x_test.reshape(-1, 28, 28, 1).astype('float32') / 255.0
 y_train = to_categorical(y_train, 10)
 y_test = to_categorical(y_test, 10)
+
+# Data augmentation
+datagen = ImageDataGenerator(
+    rotation_range=10,
+    zoom_range=0.1,
+    width_shift_range=0.1,
+    height_shift_range=0.1
+)
+datagen.fit(x_train)
 
 # Build CNN model
 model = Sequential([
@@ -34,12 +43,14 @@ model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-# Train model
-model.fit(x_train, y_train, epochs=5, batch_size=32, validation_split=0.1)
+# Train model with data augmentation
+model.fit(datagen.flow(x_train, y_train, batch_size=32),
+          validation_data=(x_test, y_test),
+          epochs=10)
 
 # Evaluate model
 loss, accuracy = model.evaluate(x_test, y_test)
 print(f"Test accuracy: {accuracy:.4f}")
 
 # Save model
-model.save('mnist_model.keras')
+model.save('mnist_cnn_model.keras')
