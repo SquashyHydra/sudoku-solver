@@ -16,7 +16,9 @@ def generate_sudoku_digit(digit, font_path=font_path, size=28, save_path=None):
     image = Image.new('L', (size, size), color=255)  # White background
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(font_path, size - 4)
-    w, h = draw.textsize(str(digit), font=font)
+    # Calculate the bounding box of the text
+    bbox = draw.textbbox((0, 0), str(digit), font=font)
+    w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
     draw.text(((size - w) / 2, (size - h) / 2), str(digit), fill=0, font=font)
     
     # Add random noise and distortions
