@@ -64,7 +64,7 @@ def create_puzzle(solution, num_cells_to_remove, max_attempts=20):
         # Ensure the puzzle has a solution count between 2 and 6
         solution_count = count_solutions(puzzle)
         print(f"Solution count: {solution_count}")
-        if 2 <= solution_count <= 6:
+        if solution_count <= 6:
             return puzzle
         
     raise Exception("Failed to create a puzzle with the desired number of solutions after several attempts")
