@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 
 test_image = r'/home/squashyhydra/sudoku-solver/image test/Screenshot 2024-08-19 082938.png'
-model_path = r'/home/squashyhydra/sudoku-solver/mnist_model.keras'
+model_path = r'/home/squashyhydra/sudoku-solver/mnist_cnn_model.keras'
 
 # Load the pretrained MNIST model
 model = tf.keras.models.load_model(model_path)
