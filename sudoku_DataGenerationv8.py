@@ -96,7 +96,7 @@ def generate_single_puzzle(used_puzzles, lock, puzzle_counter):
                 with lock:
                     if puzzle_str not in used_puzzles:
                         used_puzzles.append(puzzle_str)
-                        with puzzle_counter.get_lock():
+                        with puzzle_counter.get_lock():  # Use the lock directly
                             puzzle_counter.value += 1
                         return puzzle, solution
 
@@ -130,7 +130,7 @@ def save_sudoku_puzzles(filename, num_puzzles=100):
     
     # Monitor the progress
     while any(p.is_alive() for p in processes):
-        with puzzle_counter.get_lock():
+        with lock:  # Use the lock when printing
             print(f"Number of puzzles generated: {puzzle_counter.value}", end="\r", flush=True)
         time.sleep(1)  # Update every second
     
