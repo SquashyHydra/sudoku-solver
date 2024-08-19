@@ -105,25 +105,37 @@ def save_sudoku_data(filename, num_puzzles=100):
     with open(filename, 'w') as file:
         json.dump(data, file)
 
-def continuously_generate_sudoku_puzzles():
+def continuously_generate_sudoku_puzzles(filename):
     counter = 0
-    while True:
-        try:
-            solution = generate_solution()
-            num_cells_to_remove = random.randint(40, 60)
-            puzzle = create_puzzle(solution, num_cells_to_remove)
-            counter += 1
-            print(f"Generated puzzle number: {counter}", end="\r", flush=True)
-            # Save each puzzle and solution if needed, e.g., to a file or database
-            # Optionally save to a file or append to a list for future use
-        except KeyboardInterrupt:
-            print(f"\nGeneration stopped. Total puzzles created: {counter}")
-            break
-        except Exception as e:
-            print(f"\nAn error occurred: {e}")
-            # Optionally continue generating if an error occurs
+    puzzles = []
+    solutions = []
+    
+    try:
+        while True:
+            try:
+                solution = generate_solution()
+                num_cells_to_remove = random.randint(40, 60)
+                puzzle = create_puzzle(solution, num_cells_to_remove)
+                counter += 1
+                print(f"Generated puzzle number: {counter}", end="\r", flush=True)
+                puzzles.append(puzzle.flatten().tolist())
+                solutions.append(solution.flatten().tolist())
+            except KeyboardInterrupt:
+                print(f"\nGeneration stopped. Total puzzles created: {counter}")
+                break
+            except Exception as e:
+                print(f"\nAn error occurred: {e}")
+                # Optionally continue generating if an error occurs
+    finally:
+        # Save data to file
+        data = {
+            'puzzles': puzzles,
+            'solutions': solutions
+        }
+        with open(filename, 'w') as file:
+            json.dump(data, file)
 
 # Example Usage
 if __name__ == "__main__":
-    save_sudoku_data('sudoku_datav4.json', num_puzzles=1000)  # Generate and save puzzles and solutions
-    #continuously_generate_sudoku_puzzles()
+    #save_sudoku_data('sudoku_datav4.json', num_puzzles=1000)  # Generate and save puzzles and solutions
+    continuously_generate_sudoku_puzzles('sudoku_datav5.json')
