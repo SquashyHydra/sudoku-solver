@@ -72,7 +72,7 @@ def create_puzzle(solution, num_cells_to_remove):
     
     # Check that the puzzle has a unique solution
     if count_solutions(puzzle) != 1:
-        raise Exception("Puzzle does not have a unique solution")
+        return False
 
     return puzzle
 
@@ -83,6 +83,7 @@ def generate_single_puzzle():
     return puzzle, solution
 
 def save_sudoku_puzzles(filename, num_puzzles=100):
+    count = 0
     puzzles = []
     solutions = []
     
@@ -91,6 +92,9 @@ def save_sudoku_puzzles(filename, num_puzzles=100):
             puzzle, solution = generate_single_puzzle()
             puzzles.append(puzzle.tolist())
             solutions.append(solution.tolist())
+
+            count += 1
+            print(f"SudoKku Board Generated: {count}", end="\r", flush=True)
         except Exception as e:
             print(f"Failed to generate puzzle: {e}")
             continue
