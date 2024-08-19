@@ -167,7 +167,10 @@ def create_puzzle(solution, num_cells_to_remove):
 def has_unique_solution(puzzle, removed_cells):
     def count_solutions(board):
         solutions_count = [0]  # Use a mutable object to count solutions
+
         def count(board):
+            if solutions_count[0] > 1:  # Early exit if more than one solution is found
+                return
             for row in range(9):
                 for col in range(9):
                     if board[row][col] == 0:
@@ -178,9 +181,10 @@ def has_unique_solution(puzzle, removed_cells):
                                 board[row][col] = 0
                         return
             solutions_count[0] += 1
+
         count(puzzle.copy())
         return solutions_count[0]
-    
+
     return count_solutions(puzzle) == 1
 
 def save_sudoku_data(filename, num_puzzles=100):
