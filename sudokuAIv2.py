@@ -13,10 +13,13 @@ class SudokuAI:
     def predict_next_move(self, grid):
         flattened_grid = np.array(grid).flatten().reshape(1, -1)
         prediction = self.model.predict(flattened_grid)
-        # Reshape prediction to 9x9 grid
-        prediction_grid = prediction.reshape((9, 9, 9))
+        print(f"Prediction shape: {prediction.shape}")  # Check the shape of prediction
+        
+        # The shape should be (1, 81 * 9) if the model predicts probabilities for 9 numbers for each cell
+        prediction = prediction.reshape((9, 9, 9))  # Reshape to (9, 9, 9)
+        
         # Get the most probable number for each cell
-        predicted_numbers = np.argmax(prediction_grid, axis=2) + 1  # Adding 1 because labels start from 1
+        predicted_numbers = np.argmax(prediction, axis=2) + 1  # Adding 1 because labels start from 1
         return predicted_numbers
 
     def print_grid(self): 

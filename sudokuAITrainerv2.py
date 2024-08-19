@@ -19,10 +19,10 @@ def build_model():
         tf.keras.layers.InputLayer(input_shape=(81,)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(81, activation='sigmoid')
+        tf.keras.layers.Dense(81 * 9, activation='softmax')  # Output probabilities for each of 9 digits per cell
     ])
     
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 def train_and_save_model():
