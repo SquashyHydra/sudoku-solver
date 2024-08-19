@@ -59,5 +59,5 @@ def reconstruct_sudoku_grid(digits, grid_size=9):
 view = True
 cells = preprocess_image(test_image)
 digits = predict_digits(cells, model)
-sudoku_grid = reconstruct_sudoku_grid(digits, True)
+sudoku_grid = reconstruct_sudoku_grid(digits)
 if view: print(f"Extracted Numbers:\n{digits}\n");print("Sudoku grid:\n", sudoku_grid)
