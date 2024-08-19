@@ -27,6 +27,7 @@ def solve(board):
     return True
 
 def generate_solution():
+    print(f"Generating Solution", end="\r", flush=True)
     board = np.zeros((9, 9), dtype=int)
     
     # Fill the diagonal 3x3 boxes to start
