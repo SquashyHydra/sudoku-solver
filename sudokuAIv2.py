@@ -12,12 +12,12 @@ class SudokuAI:
 
     def predict_next_move(self, grid):
         flattened_grid = np.array(grid).flatten().reshape(1, -1)
-        
-        if flattened_grid.shape[1] != 81:
-            raise ValueError("Input grid must be of size 9x9 flattened to 81 elements")
-        
         prediction = self.model.predict(flattened_grid)
-        return prediction.reshape((9, 9))
+        # Reshape prediction to 9x9 grid
+        prediction_grid = prediction.reshape((9, 9, 9))
+        # Get the most probable number for each cell
+        predicted_numbers = np.argmax(prediction_grid, axis=2) + 1  # Adding 1 because labels start from 1
+        return predicted_numbers
 
     def print_grid(self): 
         for i in range(9): 
