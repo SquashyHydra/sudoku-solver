@@ -1,5 +1,13 @@
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
+import json
+
+def load_sudoku_data(filename):
+    with open(filename, 'r') as file:
+        dataset = json.load(file)
+    X = np.array(dataset['data'])
+    y = np.array(dataset['labels'])
+    return X, y
 
 class SudokuAI:
     def __init__(self, grid):
@@ -7,15 +15,13 @@ class SudokuAI:
         self.model = self.train_model()
 
     def train_model(self):
-        # Hypothetical training data for demonstration purposes
-        X_train = np.random.randint(1, 10, (1000, 81))  # Random Sudoku grids
-        y_train = np.random.randint(1, 10, (1000,))  # Random correct next moves
+        # Load and prepare training data
+        X_train, y_train = load_sudoku_data('sudoku_data.json')
         model = RandomForestClassifier()
         model.fit(X_train, y_train)
         return model
 
     def predict_next_move(self, grid):
-        # Predicts the best next move based on the current grid state
         flattened_grid = np.array(grid).flatten().reshape(1, -1)
         return self.model.predict(flattened_grid)
 
