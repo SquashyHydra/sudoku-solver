@@ -9,7 +9,7 @@ epochs = 40
 batch_size = 32 # 32 or 64
 
 # earyl stop
-patience = 5
+patience = 10
 
 def one_hot_encode(solutions):
     # Assuming solutions are of shape (number of samples, 81)
