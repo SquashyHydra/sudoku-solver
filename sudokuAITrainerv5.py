@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
 
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = 0
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 name_ai = "sudoku_ai_modelv4"
 epochs = 40
