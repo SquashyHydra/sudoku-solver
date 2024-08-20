@@ -4,7 +4,11 @@ import tensorflow as tf
 
 
 name_ai = "sudoku_ai_modelv4"
+epochs = 40
 batch_size = 32 # 32 or 64
+
+# earyl stop
+patience = 5
 
 def one_hot_encode(solutions):
     # Assuming solutions are of shape (number of samples, 81)
@@ -46,11 +50,11 @@ def train_and_save_model():
 
     # Define callbacks
     callbacks = [
-        tf.keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True),
+        tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True),
         tf.keras.callbacks.ModelCheckpoint(f'best_{name_ai}.keras', save_best_only=True)
     ]
     
-    model.fit(X_train, y_train, epochs=100, batch_size=batch_size, validation_split=0.1, callbacks=callbacks)
+    model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.1, callbacks=callbacks)
     
     model.save(f'{name_ai}.keras')
 
