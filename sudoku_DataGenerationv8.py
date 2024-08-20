@@ -154,4 +154,4 @@ def save_sudoku_puzzles(filename, num_puzzles=1000):
         json.dump({'puzzles': puzzles[:num_puzzles], 'solutions': solutions[:num_puzzles]}, file)
 
 if __name__ == "__main__":
-    save_sudoku_puzzles('sudoku_data2.json', num_puzzles=1000)  # Generate and save puzzles
+    save_sudoku_puzzles('sudoku_data.json', num_puzzles=1000)  # Generate and save puzzles
