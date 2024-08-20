@@ -95,11 +95,11 @@ def generate_single_puzzle(used_puzzles, lock, puzzle_counter):
                         puzzle_counter.value += 1
                         return puzzle, solution
 
-def worker(used_puzzles, lock, return_dict, puzzle_counter):
+def worker(used_puzzles, lock, return_dict, puzzle_counter, num_puzzles):
     puzzles = []
     solutions = []
     count = 0
-    while puzzle_counter.value < 1000:  # Stop when 1000 puzzles are generated
+    while puzzle_counter.value < num_puzzles:  # Stop when 1000 puzzles are generated
         puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
         if puzzle is not None:
             puzzles.append(puzzle.tolist())
@@ -114,22 +114,28 @@ def save_sudoku_puzzles(filename, num_puzzles=1000):
             existing_data = json.load(file)
             puzzles = existing_data['puzzles']
             solutions = existing_data['solutions']
+            manager = mp.Manager()
+            used_puzzles = manager.list([np.array2string(np.array(p), separator=',') for p in puzzles])
+            lock = manager.Lock()
+            return_dict = manager.dict()
+            puzzle_counter = manager.Value('i', len(puzzles))  # Shared integer for counting puzzles
     else:
         puzzles = []
         solutions = []
-
-    manager = mp.Manager()
-    used_puzzles = manager.list([np.array2string(np.array(p), separator=',') for p in puzzles])
-    lock = manager.Lock()
-    return_dict = manager.dict()
-    puzzle_counter = manager.Value('i', len(puzzles))  # Shared integer for counting puzzles
+        manager = mp.Manager()
+        used_puzzles = manager.list()
+        lock = manager.Lock()
+        return_dict = manager.dict()
+        puzzle_counter = manager.Value('i', 0)  # Shared integer for counting puzzles
     
+    num_puzzles += puzzle_counter.value
+
     processes = []
     num_workers = mp.cpu_count()  # Number of processes to run in parallel
     
     # Create worker processes
     for _ in range(num_workers):
-        p = mp.Process(target=worker, args=(used_puzzles, lock, return_dict, puzzle_counter))
+        p = mp.Process(target=worker, args=(used_puzzles, lock, return_dict, puzzle_counter, num_puzzles))
         processes.append(p)
         p.start()
     
