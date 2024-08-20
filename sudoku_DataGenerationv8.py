@@ -99,10 +99,14 @@ def worker(used_puzzles, lock, return_dict, puzzle_counter):
     puzzles = []
     solutions = []
     while puzzle_counter.value < 1000:  # Stop when 1000 puzzles are generated
-        puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
-        if puzzle is not None:
-            puzzles.append(puzzle.tolist())
-            solutions.append(solution.tolist())
+        try:
+            puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
+            if puzzle is not None:
+                puzzles.append(puzzle.tolist())
+                solutions.append(solution.tolist())
+        except Exception as e:
+            print(f"Error in worker {mp.current_process().name}: {e}")
+            break
     return_dict[mp.current_process().name] = (puzzles, solutions)
 
 def save_sudoku_puzzles(filename, num_puzzles=1000):
