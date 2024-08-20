@@ -119,10 +119,10 @@ def save_sudoku_puzzles(filename, num_puzzles=1000):
         solutions = []
 
     manager = mp.Manager()
-    used_puzzles = manager.list()
+    used_puzzles = manager.list([np.array2string(np.array(p), separator=',') for p in puzzles])
     lock = manager.Lock()
     return_dict = manager.dict()
-    puzzle_counter = manager.Value('i', 0)  # Shared integer for counting puzzles
+    puzzle_counter = manager.Value('i', len(puzzles))  # Shared integer for counting puzzles
     
     processes = []
     num_workers = mp.cpu_count()  # Number of processes to run in parallel
@@ -144,8 +144,6 @@ def save_sudoku_puzzles(filename, num_puzzles=1000):
         p.join()
     
     # Aggregate results
-    puzzles = []
-    solutions = []
     for key in return_dict:
         worker_puzzles, worker_solutions = return_dict[key]
         puzzles.extend(worker_puzzles)
