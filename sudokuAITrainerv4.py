@@ -1,7 +1,7 @@
-import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-import numpy as np
 import json
+import numpy as np
+import tensorflow as tf
+
 
 name_ai = "sudoku_ai_modelv4"
 
@@ -45,8 +45,8 @@ def train_and_save_model():
 
     # Define callbacks
     callbacks = [
-        EarlyStopping(patience=10, restore_best_weights=True),
-        ModelCheckpoint(f'best_{name_ai}.keras', save_best_only=True)
+        tf.keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True),
+        tf.keras.callbacks.ModelCheckpoint(f'best_{name_ai}.keras', save_best_only=True)
     ]
     
     model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1, callbacks=callbacks)

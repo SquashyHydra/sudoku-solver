@@ -1,8 +1,7 @@
+import os, json, time, random
 import numpy as np
-import json
-import random
 import multiprocessing as mp
-import time
+
 
 def is_valid(board, row, col, num):
     if num in board[row]:
@@ -112,11 +111,21 @@ def worker(used_puzzles, lock, return_dict, puzzle_counter):
     return_dict[mp.current_process().name] = (puzzles, solutions)
 
 def save_sudoku_puzzles(filename, num_puzzles=1000):
+    # Load existing data if it exists
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            existing_data = json.load(file)
+            puzzles = existing_data['puzzles']
+            solutions = existing_data['solutions']
+    else:
+        puzzles = []
+        solutions = []
+
     manager = mp.Manager()
     used_puzzles = manager.list()
     lock = manager.Lock()
     return_dict = manager.dict()
-    puzzle_counter = manager.Value('i', 0)  # Shared integer for counting puzzles
+    puzzle_counter = manager.Value('i', len(puzzles))  # Initialize with the count of existing puzzles
     
     processes = []
     num_workers = mp.cpu_count()  # Number of processes to run in parallel
@@ -138,16 +147,18 @@ def save_sudoku_puzzles(filename, num_puzzles=1000):
         p.join()
     
     # Aggregate results
-    puzzles = []
-    solutions = []
     for key in return_dict:
         worker_puzzles, worker_solutions = return_dict[key]
         puzzles.extend(worker_puzzles)
         solutions.extend(worker_solutions)
     
-    # Save the puzzles and solutions to a file
+    # Truncate the lists if they exceed the required number of puzzles
+    puzzles = puzzles[:num_puzzles]
+    solutions = solutions[:num_puzzles]
+
+    # Save the puzzles and solutions to the file
     with open(filename, 'w') as file:
-        json.dump({'puzzles': puzzles[:num_puzzles], 'solutions': solutions[:num_puzzles]}, file)
+        json.dump({'puzzles': puzzles, 'solutions': solutions}, file)
 
 if __name__ == "__main__":
-    save_sudoku_puzzles('sudoku_data.json', num_puzzles=1000)  # Generate and save puzzles
+    save_sudoku_puzzles('sudoku_data.json', num_puzzles=10000)  # Generate and save puzzles
