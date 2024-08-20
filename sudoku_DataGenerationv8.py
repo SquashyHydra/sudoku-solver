@@ -108,6 +108,16 @@ def worker(used_puzzles, lock, return_dict, puzzle_counter):
     return_dict[mp.current_process().name] = (puzzles, solutions)
 
 def save_sudoku_puzzles(filename, num_puzzles=1000):
+    # Load existing data if it exists
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            existing_data = json.load(file)
+            puzzles = existing_data['puzzles']
+            solutions = existing_data['solutions']
+    else:
+        puzzles = []
+        solutions = []
+
     manager = mp.Manager()
     used_puzzles = manager.list()
     lock = manager.Lock()
