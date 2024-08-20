@@ -98,33 +98,21 @@ def generate_single_puzzle(used_puzzles, lock, puzzle_counter):
 def worker(used_puzzles, lock, return_dict, puzzle_counter):
     puzzles = []
     solutions = []
+    count = 0
     while puzzle_counter.value < 1000:  # Stop when 1000 puzzles are generated
-        try:
-            puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
-            if puzzle is not None:
-                puzzles.append(puzzle.tolist())
-                solutions.append(solution.tolist())
-        except Exception as e:
-            print(f"Error in worker {mp.current_process().name}: {e}")
-            break
+        puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
+        if puzzle is not None:
+            puzzles.append(puzzle.tolist())
+            solutions.append(solution.tolist())
+            count += 1
     return_dict[mp.current_process().name] = (puzzles, solutions)
 
 def save_sudoku_puzzles(filename, num_puzzles=1000):
-    # Load existing data if it exists
-    if os.path.exists(filename):
-        with open(filename, 'r') as file:
-            existing_data = json.load(file)
-            puzzles = existing_data['puzzles']
-            solutions = existing_data['solutions']
-    else:
-        puzzles = []
-        solutions = []
-
     manager = mp.Manager()
-    used_puzzles = manager.list([np.array2string(np.array(p), separator=',') for p in puzzles])
+    used_puzzles = manager.list()
     lock = manager.Lock()
     return_dict = manager.dict()
-    puzzle_counter = manager.Value('i', len(puzzles))  # Initialize with the count of existing puzzles
+    puzzle_counter = manager.Value('i', 0)  # Shared integer for counting puzzles
     
     processes = []
     num_workers = mp.cpu_count()  # Number of processes to run in parallel
@@ -146,18 +134,16 @@ def save_sudoku_puzzles(filename, num_puzzles=1000):
         p.join()
     
     # Aggregate results
+    puzzles = []
+    solutions = []
     for key in return_dict:
         worker_puzzles, worker_solutions = return_dict[key]
         puzzles.extend(worker_puzzles)
         solutions.extend(worker_solutions)
     
-    # Truncate the lists if they exceed the required number of puzzles
-    puzzles = puzzles[:num_puzzles]
-    solutions = solutions[:num_puzzles]
-
-    # Save the puzzles and solutions to the file
+    # Save the puzzles and solutions to a file
     with open(filename, 'w') as file:
-        json.dump({'puzzles': puzzles, 'solutions': solutions}, file)
+        json.dump({'puzzles': puzzles[:num_puzzles], 'solutions': solutions[:num_puzzles]}, file)
 
 if __name__ == "__main__":
-    save_sudoku_puzzles('sudoku_data.json', num_puzzles=1000)  # Generate and save puzzles
+    save_sudoku_puzzles('sudoku_data2.json', num_puzzles=1000)  # Generate and save puzzles
