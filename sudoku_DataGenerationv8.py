@@ -2,7 +2,6 @@ import os, json, time, random
 import numpy as np
 import multiprocessing as mp
 
-
 def is_valid(board, row, col, num):
     if num in board[row]:
         return False
@@ -46,7 +45,6 @@ def generate_solution():
                     break
     if not solve(board):
         return False
-
     return board
 
 def create_puzzle(solution, num_cells_to_remove):
@@ -57,7 +55,6 @@ def create_puzzle(solution, num_cells_to_remove):
     for i in range(num_cells_to_remove):
         row, col = cells[i]
         puzzle[row][col] = 0
-    
     return puzzle
 
 def has_unique_solution(puzzle):
@@ -101,13 +98,11 @@ def generate_single_puzzle(used_puzzles, lock, puzzle_counter):
 def worker(used_puzzles, lock, return_dict, puzzle_counter):
     puzzles = []
     solutions = []
-    count = 0
     while puzzle_counter.value < 1000:  # Stop when 1000 puzzles are generated
         puzzle, solution = generate_single_puzzle(used_puzzles, lock, puzzle_counter)
         if puzzle is not None:
             puzzles.append(puzzle.tolist())
             solutions.append(solution.tolist())
-            count += 1
     return_dict[mp.current_process().name] = (puzzles, solutions)
 
 def save_sudoku_puzzles(filename, num_puzzles=1000):
@@ -122,7 +117,7 @@ def save_sudoku_puzzles(filename, num_puzzles=1000):
         solutions = []
 
     manager = mp.Manager()
-    used_puzzles = manager.list()
+    used_puzzles = manager.list([np.array2string(np.array(p), separator=',') for p in puzzles])
     lock = manager.Lock()
     return_dict = manager.dict()
     puzzle_counter = manager.Value('i', len(puzzles))  # Initialize with the count of existing puzzles
