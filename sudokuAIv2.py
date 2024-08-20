@@ -23,20 +23,20 @@ class SudokuAI:
         predicted_numbers = np.argmax(prediction, axis=2) + 1  # Adding 1 because labels start from 1
         return predicted_numbers
 
-    def print_grid(self): 
-        for i in range(9): 
-            if i % 3 == 0 and i != 0: 
-                print("-----------------------") 
+def print_grid(grid): 
+    for i in range(9): 
+        if i % 3 == 0 and i != 0: 
+            print("-----------------------") 
               
-            for j in range(9): 
-                if j % 3 == 0 and j != 0: 
-                    print(" | ", end = "") 
+        for j in range(9): 
+            if j % 3 == 0 and j != 0: 
+                print(" | ", end = "") 
               
-                if self.grid[i][j] == 0: 
-                    print("X", end = " ") 
-                else: 
-                    print(self.grid[i][j], end = " ") 
-            print()
+            if grid[i][j] == 0: 
+                print("X", end = " ") 
+            else: 
+                print(grid[i][j], end = " ") 
+        print()
 
 sudoku_puzzle = [
     [0, 9, 0, 0, 0, 3, 0, 2, 0],
@@ -56,6 +56,7 @@ if len(sudoku_puzzle) != 9 or any(len(row) != 9 for row in sudoku_puzzle):
 
 # Instantiate and use the SudokuAI class
 ai = SudokuAI(sudoku_puzzle)
-print(f"Inital Grid:\n{sudoku_puzzle}")
 predicted_grid = ai.predict_next_move(sudoku_puzzle)
+print(f"Inital Grid:")
+print_grid(sudoku_puzzle)
 print(f"Predicted Grid:\n{predicted_grid}")
