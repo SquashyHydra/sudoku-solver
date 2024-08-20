@@ -11,7 +11,7 @@ epochs = 40
 batch_size = 32 # 32 or 64
 
 # early stop
-patience = 5
+patience = 15
 
 def one_hot_encode(solutions):
     # Assuming solutions are of shape (number of samples, 81)
@@ -60,7 +60,7 @@ def train_and_save_model():
         tf.keras.callbacks.ModelCheckpoint(f'best_{name_ai}.keras', save_best_only=True)
     ]
     
-    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, validation_split=0.1, callbacks=callbacks)
+    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, callbacks=callbacks)
     
     model.save(f'{name_ai}.keras')
 
