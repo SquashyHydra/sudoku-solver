@@ -14,13 +14,16 @@ def load_sudoku_data(filename):
     puzzles = np.array(dataset['puzzles'])
     solutions = np.array(dataset['solutions'])
     
+    print("Puzzles shape:", puzzles.shape)
+    print("Solutions shape:", solutions.shape)
+    
     if puzzles.shape[1] != 81 or solutions.shape[1] != 81:
         raise ValueError("Puzzles and solutions must have shape (number of samples, 81)")
     
     # One-hot encode the solutions
     solutions_encoded = one_hot_encode(solutions)
 
-    return puzzles, solutions
+    return puzzles, solutions_encoded
 
 def build_model():
     model = tf.keras.Sequential([
