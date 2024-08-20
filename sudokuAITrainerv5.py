@@ -2,6 +2,8 @@ import json
 import numpy as np
 import tensorflow as tf
 
+from sklearn.model_selection import train_test_split
+
 
 name_ai = "sudoku_ai_modelv4"
 epochs = 40
@@ -44,8 +46,11 @@ def build_model():
     return model
 
 def train_and_save_model():
-    X_train, y_train = load_sudoku_data('sudoku_data.json')
-    
+    X, y = load_sudoku_data('sudoku_data.json')
+
+    # Split data into training and validation sets
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1, random_state=42)
+
     model = build_model()
 
     # Define callbacks
@@ -54,7 +59,7 @@ def train_and_save_model():
         tf.keras.callbacks.ModelCheckpoint(f'best_{name_ai}.keras', save_best_only=True)
     ]
     
-    model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.1, callbacks=callbacks)
+    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, validation_split=0.1, callbacks=callbacks)
     
     model.save(f'{name_ai}.keras')
 
