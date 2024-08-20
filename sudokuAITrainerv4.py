@@ -11,9 +11,11 @@ def load_sudoku_data(filename):
     with open(filename, 'r') as file:
         dataset = json.load(file)
     
-    puzzles = np.array(dataset['puzzles'])
-    solutions = np.array(dataset['solutions'])
+    puzzles = np.array([np.array(puzzle).flatten() for puzzle in dataset['puzzles']])
+    solutions = np.array([np.array(solution).flatten() for solution in dataset['solutions']])
     
+    print("First puzzle:", puzzles[0])  # Print first puzzle
+    print("First solution:", solutions[0])  # Print first solution
     print("Puzzles shape:", puzzles.shape)
     print("Solutions shape:", solutions.shape)
     
@@ -24,7 +26,6 @@ def load_sudoku_data(filename):
     solutions_encoded = one_hot_encode(solutions)
 
     return puzzles, solutions_encoded
-
 def build_model():
     model = tf.keras.Sequential([
         tf.keras.layers.InputLayer(input_shape=(81,)),
