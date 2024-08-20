@@ -3,6 +3,8 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import numpy as np
 import json
 
+name_ai = "sudoku_ai_modelv4"
+
 def one_hot_encode(solutions):
     # Assuming solutions are of shape (number of samples, 81)
     num_classes = 9  # Since Sudoku numbers are from 1 to 9
@@ -14,12 +16,7 @@ def load_sudoku_data(filename):
     
     puzzles = np.array([np.array(puzzle).flatten() for puzzle in dataset['puzzles']])
     solutions = np.array([np.array(solution).flatten() for solution in dataset['solutions']])
-    
-    print("First puzzle:", puzzles[0])  # Print first puzzle
-    print("First solution:", solutions[0])  # Print first solution
-    print("Puzzles shape:", puzzles.shape)
-    print("Solutions shape:", solutions.shape)
-    
+
     if puzzles.shape[1] != 81 or solutions.shape[1] != 81:
         raise ValueError("Puzzles and solutions must have shape (number of samples, 81)")
     
@@ -49,12 +46,12 @@ def train_and_save_model():
     # Define callbacks
     callbacks = [
         EarlyStopping(patience=10, restore_best_weights=True),
-        ModelCheckpoint('best_sudoku_ai_modelv4.keras', save_best_only=True)
+        ModelCheckpoint(f'best_{name_ai}.keras', save_best_only=True)
     ]
     
     model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1, callbacks=callbacks)
     
-    model.save('sudoku_ai_modelv4.keras')
+    model.save(f'{name_ai}.keras')
 
 # Example Usage
 if __name__ == "__main__":
