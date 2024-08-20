@@ -11,7 +11,7 @@ batch_size = 32 # 32 or 64
 learning_rate = 0.001
 
 # early stop
-patience = 20
+patience = 100
 
 def one_hot_encode(solutions):
     # Assuming solutions are of shape (number of samples, 81)
