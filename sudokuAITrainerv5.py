@@ -1,17 +1,16 @@
 import json, os
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import numpy as np
 import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
-
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 name_ai = "sudoku_ai_modelv4"
 epochs = 40
 batch_size = 32 # 32 or 64
 
 # early stop
-patience = 15
+patience = 20
 
 def one_hot_encode(solutions):
     # Assuming solutions are of shape (number of samples, 81)
