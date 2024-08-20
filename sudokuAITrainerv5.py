@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 name_ai = "sudoku_ai_modelv4"
 epochs = 40
 batch_size = 32 # 32 or 64
+learning_rate = 0.001
 
 # early stop
 patience = 20
@@ -42,6 +43,8 @@ def build_model():
         tf.keras.layers.Activation('softmax')  # Apply softmax for probability distribution
     ])
     
+    optimizer = tf.keras.optimizers.Adam(l)
+
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
