@@ -56,6 +56,6 @@ if len(sudoku_puzzle) != 9 or any(len(row) != 9 for row in sudoku_puzzle):
 
 # Instantiate and use the SudokuAI class
 ai = SudokuAI(sudoku_puzzle)
+print(f"Inital Grid:\n{sudoku_puzzle}")
 predicted_grid = ai.predict_next_move(sudoku_puzzle)
-print("Predicted Grid:")
-print(predicted_grid)
+print(f"Predicted Grid:\n{predicted_grid}")
