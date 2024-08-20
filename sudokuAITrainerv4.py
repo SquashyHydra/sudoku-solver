@@ -36,7 +36,7 @@ def build_model():
     return model
 
 def train_and_save_model():
-    X_train, y_train = load_sudoku_data('sudoku_datav2.json')
+    X_train, y_train = load_sudoku_data('sudoku_data.json')
     
     model = build_model()
     model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1)
