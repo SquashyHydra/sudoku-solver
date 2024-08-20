@@ -43,9 +43,9 @@ def build_model():
         tf.keras.layers.Activation('softmax')  # Apply softmax for probability distribution
     ])
     
-    optimizer = tf.keras.optimizers.Adam(l)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 def train_and_save_model():
