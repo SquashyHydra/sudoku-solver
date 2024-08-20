@@ -4,7 +4,6 @@ import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
 
-
 name_ai = "sudoku_ai_modelv4"
 epochs = 40
 batch_size = 32 # 32 or 64
