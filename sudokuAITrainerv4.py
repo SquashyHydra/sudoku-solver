@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import numpy as np
 import json
 
@@ -26,6 +27,7 @@ def load_sudoku_data(filename):
     solutions_encoded = one_hot_encode(solutions)
 
     return puzzles, solutions_encoded
+
 def build_model():
     model = tf.keras.Sequential([
         tf.keras.layers.InputLayer(input_shape=(81,)),
@@ -43,9 +45,16 @@ def train_and_save_model():
     X_train, y_train = load_sudoku_data('sudoku_data.json')
     
     model = build_model()
-    model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1)
+
+    # Define callbacks
+    callbacks = [
+        EarlyStopping(patience=10, restore_best_weights=True),
+        ModelCheckpoint('best_sudoku_ai_modelv4.keras', save_best_only=True)
+    ]
     
-    model.save('sudoku_ai_modelv3.keras')
+    model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1, callbacks=callbacks)
+    
+    model.save('sudoku_ai_modelv4.keras')
 
 # Example Usage
 if __name__ == "__main__":
