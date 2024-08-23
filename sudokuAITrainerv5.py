@@ -124,7 +124,7 @@ def model2():
     return model
 
 def build_model():
-    model = model2()
+    model = model1()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
