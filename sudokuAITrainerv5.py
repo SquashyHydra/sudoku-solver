@@ -77,7 +77,8 @@ def valid_sudoku_metric(y_true, y_pred):
 
     def check_unique_entries(grid):
         """ Check if each row has unique entries from 1 to 9. """
-        unique_rows = tf.reduce_all(tf.equal(tf.shape(grid)[1], tf.shape(grid)[1]))
+        batch_size = tf.shape(grid)[0]
+        unique_rows = tf.reduce_all(tf.math.count_nonzero(grid, axis=1) == 9, axis=1)
         return unique_rows
 
     def validate_rows_cols(grid):
@@ -96,9 +97,9 @@ def valid_sudoku_metric(y_true, y_pred):
                 subgrid = grid[:, i*3:(i+1)*3, j*3:(j+1)*3]
                 subgrid_flattened = tf.reshape(subgrid, [batch_size, -1])
                 subgrid_valid = check_unique_entries(subgrid_flattened)
-                subgrid_validities.append(subgrid_valid)
+                subgrid_validities.append(tf.expand_dims(subgrid_valid, axis=-1))
         
-        valid_subgrids = tf.reduce_all(tf.stack(subgrid_validities, axis=1), axis=1)
+        valid_subgrids = tf.reduce_all(tf.concat(subgrid_validities, axis=-1), axis=-1)
         return valid_subgrids
 
     valid_rows, valid_cols = validate_rows_cols(y_pred)
