@@ -78,14 +78,17 @@ def valid_sudoku_metric(y_true, y_pred):
     def check_unique_entries(grid):
         """ Check if each row has unique entries from 1 to 9. """
         batch_size = tf.shape(grid)[0]
-        unique_rows = tf.reduce_all(tf.math.count_nonzero(grid, axis=1) == 9, axis=1)
-        return unique_rows
+        num_rows = tf.shape(grid)[1]
+        num_cols = tf.shape(grid)[2]
 
-    def validate_rows_cols(grid):
-        """ Validate rows and columns for unique entries. """
-        valid_rows = check_unique_entries(grid)
-        valid_cols = check_unique_entries(tf.transpose(grid, perm=[0, 2, 1]))  # Check columns
-        return valid_rows, valid_cols
+        # Check rows for uniqueness
+        unique_rows = tf.reduce_all(tf.math.count_nonzero(grid, axis=2) == num_cols, axis=1)
+
+        # Check columns for uniqueness
+        grid_transposed = tf.transpose(grid, perm=[0, 2, 1])
+        unique_cols = tf.reduce_all(tf.math.count_nonzero(grid_transposed, axis=2) == num_rows, axis=1)
+
+        return unique_rows, unique_cols
 
     def validate_subgrids(grid):
         """ Check if each 3x3 subgrid has unique entries from 1 to 9. """
@@ -95,8 +98,8 @@ def valid_sudoku_metric(y_true, y_pred):
         for i in range(3):
             for j in range(3):
                 subgrid = grid[:, i*3:(i+1)*3, j*3:(j+1)*3]
-                subgrid_flattened = tf.reshape(subgrid, [batch_size, -1])
-                subgrid_valid = check_unique_entries(subgrid_flattened)
+                subgrid_flattened = tf.reshape(subgrid, [batch_size, -1])  # Flatten the subgrid
+                subgrid_valid = check_unique_entries(subgrid_flattened)[0]  # Check uniqueness
                 subgrid_validities.append(tf.expand_dims(subgrid_valid, axis=-1))
         
         valid_subgrids = tf.reduce_all(tf.concat(subgrid_validities, axis=-1), axis=-1)
