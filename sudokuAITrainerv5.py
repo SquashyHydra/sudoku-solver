@@ -7,7 +7,7 @@ import datetime
 from sklearn.model_selection import train_test_split
 
 name_ai = "sudoku_ai_modelv4"
-epochs = 40
+epochs = 1000
 batch_size = 32 # 32 or 64
 learning_rate = 0.001
 
@@ -205,7 +205,7 @@ def model6():
     return model
 
 def build_model():
-    model = model5()
+    model = model1()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
@@ -228,7 +228,7 @@ def train_and_save_model():
     
     model.evaluate(x_test, y_test, verbose=2)
 
-    model.save(f'{name_ai}.keras')
+    model.save(f'models/{name_ai}.keras')
 
 # Example Usage
 if __name__ == "__main__":
