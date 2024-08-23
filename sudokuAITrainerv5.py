@@ -145,7 +145,7 @@ def train_and_save_model():
     
     model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, callbacks=tensorboard_callback)
     
-    model.ev
+    model.evaluate(x_test)
 
     model.save(f'{name_ai}.keras')
 
