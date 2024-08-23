@@ -24,18 +24,9 @@ class SudokuAI:
         return predicted_numbers
 
 def print_grid(grid): 
-    for i in range(9): 
-        if i % 3 == 0 and i != 0: 
-            print("-----------------------") 
-              
-        for j in range(9): 
-            if j % 3 == 0 and j != 0: 
-                print(" | ", end = "") 
-              
-            if grid[i][j] == 0: 
-                print("X", end = " ") 
-            else: 
-                print(grid[i][j], end = " ") 
+    for i in range(9 * 9):
+        for j in range(9):
+            print(f"{grid[j]}", end=" ", flush=True)
         print()
 
 sudoku_puzzle = [
