@@ -188,7 +188,7 @@ def model5():
 
 def model6():
     from spektral.layers import GCNConv
-    
+
     inputs = tf.keras.Input(shape=(81,))
     x = tf.keras.layers.Reshape((9, 9, 1))(inputs)
     
@@ -205,7 +205,7 @@ def model6():
     return model
 
 def build_model():
-    model = model1()
+    model = model5()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
