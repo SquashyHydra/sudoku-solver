@@ -28,10 +28,26 @@ def load_sudoku_data(filename):
     if puzzles.shape[1] != 81 or solutions.shape[1] != 81:
         raise ValueError("Puzzles and solutions must have shape (number of samples, 81)")
     
+    puzzles = puzzles - 1
+
     # One-hot encode the solutions
     solutions_encoded = one_hot_encode(solutions)
 
     return puzzles, solutions_encoded
+
+def sudoku_loss(y_true, y_pred):
+    y_pred = tf.reshape(y_pred, [-1, 81, 9])
+    loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
+
+    return loss
+
+def valid_sudoku_metric(y_true, y_pred):
+    y_pred = tf.argmax(y_pred, axis=1)
+    y_true = tf.argmax(y_true, axis=1)
+
+    valid_rows = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred, 9), axis=1) == 1, axis=1)
+
+    return tf.reduce_mean(tf.cast(valid_rows, tf.float32))
 
 def build_model():
     model = tf.keras.Sequential([
@@ -47,7 +63,7 @@ def build_model():
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=optimizer, loss=sudoku_loss, metrics=['accuracy', valid_sudoku_metric])
     return model
 
 def train_and_save_model():
