@@ -38,17 +38,48 @@ def load_sudoku_data(filename):
 
 def sudoku_loss(y_true, y_pred):
     y_pred = tf.reshape(y_pred, [-1, 81, 9])
-    loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
+    base_loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
 
-    return loss
+    y_pred =tf.argmax(y_pred, axis=1)
+    y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
+
+    row_penalty = tf.reduce_mean(tf.cast(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=2) != 1, tf.float32))
+
+    col_penalty = tf.reduce_mean(tf.cast(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=1) != 1, tf.float32))
+
+    subgrid_penalty = 0
+    for i in range(3):
+        for j in range(3):
+            subgrid = y_pred_reshaped[:, i*3:(i+1)*3, j*3:(j+1)*3]
+            subgrid_penalty += tf.reduce_mean(tf.cast(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[1, 2]) != 1, tf.float32))
+    
+    total_penalty = row_penalty + col_penalty + subgrid_penalty
+
+    total_loss = base_loss + total_penalty
+
+    return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
     y_pred = tf.argmax(y_pred, axis=1)
     y_true = tf.argmax(y_true, axis=1)
 
-    valid_rows = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred, 9), axis=1) == 1, axis=1)
+    y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
 
-    return tf.reduce_mean(tf.cast(valid_rows, tf.float32))
+    valid_rows = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=1) == 1, axis=1)
+
+    valid_cols = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=1) == 1, axis=1)
+
+    valid_subgrids = []
+    for i in range(3):
+        for j in range(3):
+            subgrid = y_pred_reshaped[:, i*3:(i+1)*3, j*3:(j+1)*3]
+            valid_subgrids.append(tf.reduce_all(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[1, 2]) == 1))
+
+    valid_subgrids = tf.reduce_all(tf.stack(valid_subgrids, axis=1), axis=1)
+
+    valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
+
+    return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))
 
 def build_model():
     model = tf.keras.Sequential([
