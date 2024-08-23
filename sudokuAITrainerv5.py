@@ -7,12 +7,15 @@ import datetime
 from sklearn.model_selection import train_test_split
 
 name_ai = "sudoku_ai_modelv4.1"
-epochs = 1000
+EPOCH = 1000
 batch_size = 32 # 32 or 64
 learning_rate = 0.001
 
 # early stop
 patience = 100
+
+CHECKPOINT="cnn_ckpt/sudoku_cnn-{epoch:02d}-{loss:.2f}.hdf5"
+LOGS='tmp/logs'
 
 def one_hot_encode(solutions):
     # Assuming solutions are of shape (number of samples, 81)
@@ -260,7 +263,10 @@ def build_model():
 
     model.summary()
 
-    checkpoint = ModelCheckpoint(CHECKPOINT, monitor='sparse_categorical_accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max') 
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(CHECKPOINT, monitor='sparse_categorical_accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max')
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='sparse_categorical_accuracy', factor=0.60, patience=3, min_lr=0.000001, verbose=1, mode='max')
+    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=LOGS, histogram_freq=0,
+                          write_graph=True, write_images=True)
 
     return model
 
@@ -273,10 +279,8 @@ def train_and_save_model():
     model = build_model()
 
     # Define callbacks
-    log_dir = "tmp/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, callbacks=tensorboard_callback)
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=EPOCH, batch_size=batch_size, callbacks=tensorboard_callback)
     
     model.evaluate(x_test, y_test, verbose=2)
 
