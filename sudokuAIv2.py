@@ -21,6 +21,11 @@ class SudokuAI:
         
         # Get the most probable number for each cell
         predicted_numbers = np.argmax(prediction, axis=2) + 1  # Adding 1 because labels start from 1
+
+        mask = np.array(grid).reshape((9, 9)) > 0
+
+        predicted_numbers[mask] = np.array(grid).reshape((9, 9))[mask]
+
         return predicted_numbers
 
 def print_grid(grid):
