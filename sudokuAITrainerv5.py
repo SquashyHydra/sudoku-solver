@@ -6,7 +6,7 @@ import datetime
 
 from sklearn.model_selection import train_test_split
 
-name_ai = "sudoku_ai_modelv4.1"
+name_ai = "sudoku_ai_modelv4.2"
 EPOCH = 1000
 batch_size = 32 # 32 or 64
 learning_rate = 0.001
@@ -14,7 +14,7 @@ learning_rate = 0.001
 # early stop
 patience = 100
 
-CHECKPOINT="cnn_ckpt/sudoku_cnn-{epoch:02d}-{loss:.2f}.hdf5"
+CHECKPOINT="models/{name_ai}-{epoch:02d}-{loss:.2f}.keras"
 LOGS='tmp/logs'
 
 def one_hot_encode(solutions):
@@ -267,6 +267,7 @@ def build_model():
 
 def train_and_save_model():
     x, y = load_sudoku_data('sudoku_data.json')
+    num_train = len(x)
 
     # Split data into training and validation sets
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, random_state=42)
@@ -280,7 +281,7 @@ def train_and_save_model():
     
     callbacks_list = [checkpoint, tensorboard, reduce_lr]
 
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=EPOCH, batch_size=batch_size, callbacks=callbacks_list)
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=EPOCH, steps_per_epoch=num_train//batch_size, batch_size=batch_size, callbacks=callbacks_list)
     
     model.evaluate(x_test, y_test, verbose=2)
 
