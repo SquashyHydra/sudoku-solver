@@ -67,49 +67,7 @@ def sudoku_loss(y_true, y_pred):
     return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
-    # Convert probabilities to class predictions
-    y_pred = tf.argmax(y_pred, axis=-1)  # Shape: [batch_size, 81]
-    y_true = tf.argmax(y_true, axis=-1)  # Shape: [batch_size, 81]
-
-    # Reshape predictions and true values to (batch_size, 9, 9)
-    y_pred = tf.reshape(y_pred, [-1, 9, 9])  # Shape: [batch_size, 9, 9]
-    y_true = tf.reshape(y_true, [-1, 9, 9])  # Shape: [batch_size, 9, 9]
-
-    def check_unique_entries(grid):
-        """ Check if each row and column has unique entries from 1 to 9. """
-        batch_size = tf.shape(grid)[0]
-        num_rows = tf.shape(grid)[1]
-        num_cols = tf.shape(grid)[2]
-
-        # Check rows for uniqueness
-        unique_rows = tf.reduce_all(tf.math.count_nonzero(grid, axis=2) == num_cols, axis=1)
-
-        # Check columns for uniqueness
-        grid_transposed = tf.transpose(grid, perm=[0, 2, 1])
-        unique_cols = tf.reduce_all(tf.math.count_nonzero(grid_transposed, axis=2) == num_rows, axis=1)
-
-        return unique_rows, unique_cols
-
-    def validate_subgrids(grid):
-        """ Check if each 3x3 subgrid has unique entries from 1 to 9. """
-        batch_size = tf.shape(grid)[0]
-        subgrid_validities = []
-
-        for i in range(3):
-            for j in range(3):
-                subgrid = grid[:, i*3:(i+1)*3, j*3:(j+1)*3]
-                subgrid_flattened = tf.reshape(subgrid, [batch_size, -1])  # Flatten the subgrid
-                subgrid_valid = check_unique_entries(subgrid_flattened)[0]  # Check uniqueness
-                subgrid_validities.append(tf.expand_dims(subgrid_valid, axis=-1))
-        
-        valid_subgrids = tf.reduce_all(tf.concat(subgrid_validities, axis=-1), axis=-1)
-        return valid_subgrids
-
-    valid_rows, valid_cols = check_unique_entries(y_pred)
-    valid_subgrids = validate_subgrids(y_pred)
-
-    valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
-    return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))  # Scalar metri
+    raise Exception
 
 def build_model():
     model = tf.keras.Sequential([
