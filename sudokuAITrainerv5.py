@@ -14,7 +14,7 @@ learning_rate = 1e-3
 # early stop
 patience = 100
 
-CHECKPOINT="models/{name_ai}-{epoch:02d}-{loss:.2f}.keras"
+CHECKPOINT=f"models/{name_ai}" + "-{epoch:02d}-{loss:.2f}.keras"
 LOGS='tmp/logs'
 
 def one_hot_encode(solutions):
@@ -288,7 +288,7 @@ def build_model():
     model = model1()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    model.compile(optimizer=optimizer, loss='categorical_', metrics=['categorical_accuracy'])
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
 
     model.summary()
 
