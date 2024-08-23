@@ -263,10 +263,6 @@ def build_model():
 
     model.summary()
 
-    checkpoint = tf.keras.callbacks.ModelCheckpoint(CHECKPOINT, monitor='sparse_categorical_accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max')
-    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='sparse_categorical_accuracy', factor=0.60, patience=3, min_lr=0.000001, verbose=1, mode='max')
-    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=LOGS, histogram_freq=0, write_graph=True, write_images=True)
-
     return model
 
 def train_and_save_model():
@@ -278,8 +274,13 @@ def train_and_save_model():
     model = build_model()
 
     # Define callbacks
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(CHECKPOINT, monitor='sparse_categorical_accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max')
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='sparse_categorical_accuracy', factor=0.60, patience=3, min_lr=0.000001, verbose=1, mode='max')
+    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=LOGS, histogram_freq=0, write_graph=True, write_images=True)
     
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=EPOCH, batch_size=batch_size, callbacks=tensorboard_callback)
+    callbacks_list = [checkpoint, tensorboard, reduce_lr]
+
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=EPOCH, batch_size=batch_size, callbacks=callbacks_list)
     
     model.evaluate(x_test, y_test, verbose=2)
 
