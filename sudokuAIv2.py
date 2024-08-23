@@ -23,9 +23,18 @@ class SudokuAI:
         predicted_numbers = np.argmax(prediction, axis=2) + 1  # Adding 1 because labels start from 1
         return predicted_numbers
 
-def print_grid(grid): 
+def print_grid(grid):
+    j = 0
+    print(f"[", end="", flush=True)
     for i in grid:
-        print(i)
+        if j == 0:
+            print(f"[", end="", flush=True)
+        print(f'{i}', end=" ", flush=True)
+        j += 1
+        if j == 9:
+            j = 0
+            print(f']', end="\n", flush=True)
+    print(f"]", end="\n", flush=True)
 
 sudoku_puzzle = [
     [0, 9, 0, 0, 0, 3, 0, 2, 0],
