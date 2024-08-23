@@ -76,7 +76,7 @@ def valid_sudoku_metric(y_true, y_pred):
     y_true = tf.reshape(y_true, [-1, 9, 9])  # Shape: [batch_size, 9, 9]
 
     def check_unique_entries(grid):
-        """ Check if each row has unique entries from 1 to 9. """
+        """ Check if each row and column has unique entries from 1 to 9. """
         batch_size = tf.shape(grid)[0]
         num_rows = tf.shape(grid)[1]
         num_cols = tf.shape(grid)[2]
@@ -105,11 +105,11 @@ def valid_sudoku_metric(y_true, y_pred):
         valid_subgrids = tf.reduce_all(tf.concat(subgrid_validities, axis=-1), axis=-1)
         return valid_subgrids
 
-    valid_rows, valid_cols = validate_rows_cols(y_pred)
+    valid_rows, valid_cols = check_unique_entries(y_pred)
     valid_subgrids = validate_subgrids(y_pred)
 
     valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
-    return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))  # Scalar metric
+    return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))  # Scalar metri
 
 def build_model():
     model = tf.keras.Sequential([
