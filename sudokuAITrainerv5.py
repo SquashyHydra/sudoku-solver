@@ -40,7 +40,7 @@ def sudoku_loss(y_true, y_pred):
     y_pred = tf.reshape(y_pred, [-1, 81, 9])
     base_loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
 
-    y_pred =tf.argmax(y_pred, axis=1)
+    y_pred =tf.argmax(y_pred, axis=-1)
     y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
 
     row_penalty = tf.reduce_mean(tf.cast(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=2) != 1, tf.float32))
@@ -60,8 +60,8 @@ def sudoku_loss(y_true, y_pred):
     return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
-    y_pred = tf.argmax(y_pred, axis=1)
-    y_true = tf.argmax(y_true, axis=1)
+    y_pred = tf.argmax(y_pred, axis=-1)
+    y_true = tf.argmax(y_true, axis=-1)
 
     y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
 
