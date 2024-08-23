@@ -67,8 +67,8 @@ def sudoku_loss(y_true, y_pred):
     return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
-    y_pred = tf.argmax(y_pred, axis=-1)
-    y_true = tf.argmax(y_true, axis=-1)
+    y_pred = tf.argmax(y_pred, axis=-1)  # Convert predicted probabilities to the most likely class (1-9)
+    y_true = tf.argmax(y_true, axis=-1)  # Same for true labels
 
     y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
 
@@ -85,11 +85,12 @@ def valid_sudoku_metric(y_true, y_pred):
             subgrid = y_pred_reshaped[:, i*3:(i+1)*3, j*3:(j+1)*3]
             valid_subgrids.append(tf.reduce_all(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[1, 2]) == 1, axis=-1))
     
-    # Stack along a new axis and then reduce along that axis
-    valid_subgrids = tf.reduce_all(tf.stack(valid_subgrids, axis=1), axis=-1)
-    
+    # Stack subgrid validity results and reduce them
+    valid_subgrids = tf.stack(valid_subgrids, axis=1)  # Shape should be [batch_size, 9]
+    valid_subgrids = tf.reduce_all(valid_subgrids, axis=1)  # Shape should be [batch_size]
+
     # Combine the validity of rows, columns, and subgrids
-    valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=-1)
+    valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
     
     return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))
 
