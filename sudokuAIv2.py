@@ -12,8 +12,8 @@ class SudokuAI:
             raise
 
     def predict_next_move(self, grid):
-        flattened_grid = np.array(grid).flatten().reshape(1, -1)
-        prediction = self.model.predict(flattened_grid)
+        reshaped_grid = grid.reshape(1, -1)
+        prediction = self.model.predict(reshaped_grid)
         print(f"Prediction shape: {prediction.shape}")  # Check the shape of prediction
         
         # The shape should be (1, 81 * 9) if the model predicts probabilities for 9 numbers for each cell
