@@ -67,30 +67,24 @@ def sudoku_loss(y_true, y_pred):
     return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
-    """
-    Custom metric for checking the validity of Sudoku solutions.
-    """
-    y_pred = tf.argmax(y_pred, axis=-1)  # Convert predicted probabilities to the most likely class (1-9)
-    y_true = tf.argmax(y_true, axis=-1)  # Same for true labels
+    # Convert probabilities to class predictions
+    y_pred = tf.argmax(y_pred, axis=-1)  # Shape: [batch_size, 81]
+    y_true = tf.argmax(y_true, axis=-1)  # Shape: [batch_size, 81]
 
-    # Reshape predictions to (batch_size, 9, 9)
-    y_pred = tf.reshape(y_pred, [-1, 9, 9])
-    
+    # Reshape predictions and true values
+    y_pred = tf.reshape(y_pred, [-1, 9, 9])  # Shape: [batch_size, 9, 9]
+    y_true = tf.reshape(y_true, [-1, 9, 9])  # Shape: [batch_size, 9, 9]
+
     def check_valid_entries(tensor):
-        # Ensure tensor has shape [batch_size, 9] (valid entries across rows or columns)
-        return tf.reduce_all(tf.reduce_sum(tf.one_hot(tensor, 9), axis=1) == 1, axis=1)
-    
-    # Validate rows
-    valid_rows = check_valid_entries(y_pred)  # Expected shape: [batch_size]
-    valid_rows = tf.expand_dims(valid_rows, axis=1)  # Shape: [batch_size, 1]
-    
-    # Validate columns
-    y_pred_transposed = tf.transpose(y_pred, perm=[0, 2, 1])  # Transpose to validate columns
-    valid_cols = check_valid_entries(y_pred_transposed)  # Expected shape: [batch_size]
-    valid_cols = tf.expand_dims(valid_cols, axis=1)  # Shape: [batch_size, 1]
-    
-    # Validate 3x3 subgrids
+        """ Check if each row has unique entries from 1 to 9. """
+        one_hot_tensor = tf.one_hot(tensor, 9, dtype=tf.float32)  # Shape: [batch_size, 9, 9]
+        return tf.reduce_all(tf.reduce_sum(one_hot_tensor, axis=1) == 1, axis=1)
+
+    valid_rows = check_valid_entries(y_pred)
+    valid_cols = check_valid_entries(tf.transpose(y_pred, perm=[0, 2, 1]))  # Shape: [batch_size, 9]
+
     def validate_subgrids(grid):
+        """ Check if each 3x3 subgrid has unique entries from 1 to 9. """
         batch_size = tf.shape(grid)[0]
         subgrid_validities = []
         for i in range(3):
@@ -99,30 +93,15 @@ def valid_sudoku_metric(y_true, y_pred):
                 subgrid_flattened = tf.reshape(subgrid, [batch_size, -1])
                 valid_subgrid = check_valid_entries(subgrid_flattened)
                 subgrid_validities.append(valid_subgrid)
-        
-        # Stack subgrid validities and reduce them
-        valid_subgrids = tf.stack(subgrid_validities, axis=1)  # Shape: [batch_size, 9]
-        valid_subgrids = tf.reduce_all(valid_subgrids, axis=1)  # Shape: [batch_size]
-        valid_subgrids = tf.expand_dims(valid_subgrids, axis=1)  # Shape: [batch_size, 1]
+        valid_subgrids = tf.stack(subgrid_validities, axis=1)
+        valid_subgrids = tf.reduce_all(valid_subgrids, axis=1)
         return valid_subgrids
-    
-    valid_subgrids = validate_subgrids(y_pred)
 
-    # Debugging: Check shapes before stacking
-    print(f"valid_rows shape: {valid_rows.shape}")
-    print(f"valid_cols shape: {valid_cols.shape}")
-    print(f"valid_subgrids shape: {valid_subgrids.shape}")
+    valid_subgrids = validate_subgrids(y_pred)  # Shape: [batch_size, 1]
 
-    # Ensure all tensors have the shape [batch_size, 1]
-    valid_rows = tf.squeeze(valid_rows, axis=1)  # Shape: [batch_size]
-    valid_cols = tf.squeeze(valid_cols, axis=1)  # Shape: [batch_size]
-    valid_subgrids = tf.squeeze(valid_subgrids, axis=1)  # Shape: [batch_size]
-    
-    # Stack tensors and reduce across axis 1
     valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
-    
-    return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))
-    
+    return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))  # Scalar metric
+
 def build_model():
     model = tf.keras.Sequential([
         tf.keras.layers.InputLayer(input_shape=(81,)),
