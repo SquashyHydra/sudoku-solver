@@ -25,15 +25,28 @@ class SudokuAI:
 
 def print_grid(grid):
     j = 0
+    z = 0
     print(f"[", end="", flush=True)
     for i in grid:
-        if j == 0:
+        if j == 0 and z == 0:
             print(f"[", end="", flush=True)
-        print(f'{i}', end=" ", flush=True)
+        elif j == 0 and z != 0:
+            print(f" [", end="", flush=True)
+
+        if j != 8:
+            print(f'{i}', end=" ", flush=True)
+        elif j == 8:
+            print(f'{i}', end="", flush=True)
+
         j += 1
-        if j == 9:
+
+        if j == 9 and not z == 8:
             j = 0
+            z += 1
             print(f']', end="\n", flush=True)
+
+        if z == 8 and j == 9:
+            print(f"]", end='', flush=True)
     print(f"]", end="\n", flush=True)
 
 sudoku_puzzle = [
