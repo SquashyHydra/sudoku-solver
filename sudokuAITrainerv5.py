@@ -288,7 +288,7 @@ def build_model():
     model = model1()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
     model.summary()
 
@@ -304,8 +304,8 @@ def train_and_save_model():
     model = build_model()
 
     # Define callbacks
-    checkpoint = tf.keras.callbacks.ModelCheckpoint(CHECKPOINT, monitor='sparse_categorical_accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max')
-    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='sparse_categorical_accuracy', factor=0.60, patience=3, min_lr=0.000001, verbose=1, mode='max')
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(CHECKPOINT, monitor='accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max')
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='accuracy', factor=0.60, patience=3, min_lr=0.000001, verbose=1, mode='max')
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=LOGS, histogram_freq=0, write_graph=True, write_images=True)
     
     callbacks_list = [checkpoint, tensorboard, reduce_lr]
