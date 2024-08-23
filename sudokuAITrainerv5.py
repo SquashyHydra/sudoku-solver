@@ -285,10 +285,10 @@ def model8():
     return model
 
 def build_model():
-    model = model7()
+    model = model1()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    model.compile(optimizer=optimizer, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['sparse_categorical_accuracy'])
+    model.compile(optimizer=optimizer, loss='categorical_', metrics=['categorical_accuracy'])
 
     model.summary()
 
