@@ -123,6 +123,87 @@ def model2():
 
     return model
 
+def model3():
+    inputs = tf.keras.Input(shape=(81,))
+    x = tf.keras.layers.Reshape((9, 9, 1))(inputs)
+    x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.Add()([x, tf.keras.layers.Conv2D(32, (1, 1), padding='same')(x)])  # Residual connection
+    x = tf.keras.layers.MaxPooling2D((2, 2))(x)
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.MaxPooling2D((2, 2))(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(81 * 9, activation='softmax')(x)
+    x = tf.keras.layers.Reshape((81, 9))(x)
+    model = tf.keras.Model(inputs, x)
+
+    return model
+
+def model4():
+    inputs = tf.keras.Input(shape=(81,))
+    x = tf.keras.layers.Reshape((9, 9, 1))(inputs)
+    
+    # Encoder
+    x1 = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x1 = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x1)
+    x1_pool = tf.keras.layers.MaxPooling2D((2, 2))(x1)
+    
+    x2 = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x1_pool)
+    x2 = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x2)
+    x2_pool = tf.keras.layers.MaxPooling2D((2, 2))(x2)
+    
+    # Bottleneck
+    x3 = tf.keras.layers.Conv2D(256, (3, 3), activation='relu', padding='same')(x2_pool)
+    x3 = tf.keras.layers.Conv2D(256, (3, 3), activation='relu', padding='same')(x3)
+    
+    # Decoder
+    x2_up = tf.keras.layers.Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(x3)
+    x2_up = tf.keras.layers.Concatenate()([x2_up, x2])
+    x2_up = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x2_up)
+    x2_up = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x2_up)
+    
+    x1_up = tf.keras.layers.Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(x2_up)
+    x1_up = tf.keras.layers.Concatenate()([x1_up, x1])
+    x1_up = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x1_up)
+    x1_up = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x1_up)
+    
+    outputs = tf.keras.layers.Conv2D(81 * 9, (1, 1), activation='softmax')(x1_up)
+    outputs = tf.keras.layers.Reshape((81, 9))(outputs)
+    
+    model = tf.keras.Model(inputs, outputs)
+    return model
+
+def model5():
+    inputs = tf.keras.Input(shape=(81,))
+    x = tf.keras.layers.Reshape((9, 9))(inputs)
+    x = tf.keras.layers.LSTM(128, return_sequences=True)(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(81 * 9, activation='softmax')(x)
+    outputs = tf.keras.layers.Reshape((81, 9))(x)
+    
+    model = tf.keras.Model(inputs, outputs)
+    return model
+
+
+def model6():
+    from spektral.layers import GCNConv
+    
+    inputs = tf.keras.Input(shape=(81,))
+    x = tf.keras.layers.Reshape((9, 9, 1))(inputs)
+    
+    # Convert the grid into a graph structure here
+    # This requires a custom preprocessing step to convert the grid into graph data
+
+    # Example architecture using GCN
+    x = tf.keras.layers.Flatten()(x)  # Flatten grid to feed into GCN
+    x = tf.keras.layers.Dense(256, activation='relu')(x)
+    x = tf.keras.layers.Dense(81 * 9, activation='softmax')(x)
+    outputs = tf.keras.layers.Reshape((81, 9))(x)
+    
+    model = tf.keras.Model(inputs, outputs)
+    return model
+
 def build_model():
     model = model1()
     
