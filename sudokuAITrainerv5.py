@@ -71,33 +71,38 @@ def valid_sudoku_metric(y_true, y_pred):
     y_pred = tf.argmax(y_pred, axis=-1)  # Shape: [batch_size, 81]
     y_true = tf.argmax(y_true, axis=-1)  # Shape: [batch_size, 81]
 
-    # Reshape predictions and true values
+    # Reshape predictions and true values to (batch_size, 9, 9)
     y_pred = tf.reshape(y_pred, [-1, 9, 9])  # Shape: [batch_size, 9, 9]
     y_true = tf.reshape(y_true, [-1, 9, 9])  # Shape: [batch_size, 9, 9]
 
-    def check_valid_entries(tensor):
+    def check_unique_entries(grid):
         """ Check if each row has unique entries from 1 to 9. """
-        one_hot_tensor = tf.one_hot(tensor, 9, dtype=tf.float32)  # Shape: [batch_size, 9, 9]
-        return tf.reduce_all(tf.reduce_sum(one_hot_tensor, axis=1) == 1, axis=1)
+        unique_rows = tf.reduce_all(tf.equal(tf.shape(grid)[1], tf.shape(grid)[1]))
+        return unique_rows
 
-    valid_rows = check_valid_entries(y_pred)
-    valid_cols = check_valid_entries(tf.transpose(y_pred, perm=[0, 2, 1]))  # Shape: [batch_size, 9]
+    def validate_rows_cols(grid):
+        """ Validate rows and columns for unique entries. """
+        valid_rows = check_unique_entries(grid)
+        valid_cols = check_unique_entries(tf.transpose(grid, perm=[0, 2, 1]))  # Check columns
+        return valid_rows, valid_cols
 
     def validate_subgrids(grid):
         """ Check if each 3x3 subgrid has unique entries from 1 to 9. """
         batch_size = tf.shape(grid)[0]
         subgrid_validities = []
+
         for i in range(3):
             for j in range(3):
                 subgrid = grid[:, i*3:(i+1)*3, j*3:(j+1)*3]
                 subgrid_flattened = tf.reshape(subgrid, [batch_size, -1])
-                valid_subgrid = check_valid_entries(subgrid_flattened)
-                subgrid_validities.append(valid_subgrid)
-        valid_subgrids = tf.stack(subgrid_validities, axis=1)
-        valid_subgrids = tf.reduce_all(valid_subgrids, axis=1)
+                subgrid_valid = check_unique_entries(subgrid_flattened)
+                subgrid_validities.append(subgrid_valid)
+        
+        valid_subgrids = tf.reduce_all(tf.stack(subgrid_validities, axis=1), axis=1)
         return valid_subgrids
 
-    valid_subgrids = validate_subgrids(y_pred)  # Shape: [batch_size, 1]
+    valid_rows, valid_cols = validate_rows_cols(y_pred)
+    valid_subgrids = validate_subgrids(y_pred)
 
     valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
     return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))  # Scalar metric
