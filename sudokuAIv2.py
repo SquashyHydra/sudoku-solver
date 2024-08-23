@@ -24,10 +24,8 @@ class SudokuAI:
         return predicted_numbers
 
 def print_grid(grid): 
-    for i in range(9 * 9):
-        for j in range(9):
-            print(f"{grid[j]}", end=" ", flush=True)
-        print()
+    for i in grid:
+        print(i)
 
 sudoku_puzzle = [
     [0, 9, 0, 0, 0, 3, 0, 2, 0],
