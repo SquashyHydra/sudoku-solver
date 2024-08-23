@@ -2,6 +2,7 @@ import json, os
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import numpy as np
 import tensorflow as tf
+import datetime
 
 from sklearn.model_selection import train_test_split
 
@@ -75,12 +76,10 @@ def train_and_save_model():
     model = build_model()
 
     # Define callbacks
-    callbacks = [
-        tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True),
-        tf.keras.callbacks.ModelCheckpoint(f'best_{name_ai}.keras', save_best_only=True)
-    ]
+    log_dir = "tmp/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     
-    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, callbacks=callbacks)
+    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, callbacks=tensorboard_callback)
     
     model.save(f'{name_ai}.keras')
 
