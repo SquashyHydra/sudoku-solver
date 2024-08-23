@@ -265,8 +265,7 @@ def build_model():
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(CHECKPOINT, monitor='sparse_categorical_accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max')
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='sparse_categorical_accuracy', factor=0.60, patience=3, min_lr=0.000001, verbose=1, mode='max')
-    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=LOGS, histogram_freq=0,
-                          write_graph=True, write_images=True)
+    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=LOGS, histogram_freq=0, write_graph=True, write_images=True)
 
     return model
 
