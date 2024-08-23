@@ -238,6 +238,35 @@ def model6():
     return model
 
 def model7():
+    model = tf.keras.Sequential([
+        tf.keras.layers.Conv2D(filters=81, kernel_size=3, padding='same', input_shape=(9,9,1)),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.PReLU(),
+
+        tf.keras.layers.Conv2D(filters=81, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.PReLU(),
+
+        tf.keras.layers.Conv2D(filters=81, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.PReLU(),
+
+        tf.keras.layers.Conv2D(filters=81*2, kernel_size=1, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.PReLU(),
+
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(units=81*18),
+        tf.keras.layers.PReLU(),
+        tf.keras.layers.Dense(units=81*9),
+        
+        tf.keras.layers.Reshape((9, 9 , 9)),
+        tf.keras.layers.Softmax()
+    ])
+    
+    return model
+
+def model8():
     from spektral.layers import GCNConv
 
     inputs = tf.keras.Input(shape=(81,))
@@ -256,10 +285,10 @@ def model7():
     return model
 
 def build_model():
-    model = model6()
+    model = model7()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    model.compile(optimizer=optimizer, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['sparse_categorical_accuracy'])
+    model.compile(optimizer=optimizer, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['sparse_categorical_accuracy'])
 
     model.summary()
 
