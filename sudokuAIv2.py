@@ -50,9 +50,8 @@ sudoku_puzzle = [
     [0, 0, 0, 0, 0, 0, 7, 0, 6]   # Added an empty row to make it 9x9
 ]
 
-# Check grid size
-if len(sudoku_puzzle) != 9 or any(len(row) != 9 for row in sudoku_puzzle):
-    raise ValueError("Sudoku grid must be 9x9")
+sudoku_puzzle = np.array(sudoku_puzzle).flatten()
+
 
 # Instantiate and use the SudokuAI class
 ai = SudokuAI(sudoku_puzzle)
