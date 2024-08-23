@@ -6,7 +6,7 @@ import datetime
 
 from sklearn.model_selection import train_test_split
 
-name_ai = "sudoku_ai_modelv4"
+name_ai = "sudoku_ai_modelv4.1"
 epochs = 1000
 batch_size = 32 # 32 or 64
 learning_rate = 0.001
@@ -209,7 +209,7 @@ def build_model():
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy")
+    model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=['accuracy'])
     return model
 
 def train_and_save_model():
