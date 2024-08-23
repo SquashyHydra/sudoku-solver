@@ -104,7 +104,7 @@ def valid_sudoku_metric(y_true, y_pred):
     
     valid_subgrids = validate_subgrids(y_pred)
 
-    # Combine the validity of rows, columns, and subgrids
+    # Ensure all tensors have the same shape [batch_size]
     valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
     
     return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))
