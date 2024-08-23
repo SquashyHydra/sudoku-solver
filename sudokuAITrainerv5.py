@@ -256,8 +256,12 @@ def build_model():
     model = model6()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    model.compile(optimizer=optimizer, loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['sparse_categorical_accuracy'])
 
-    model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=['accuracy'])
+    model.summary()
+
+    checkpoint = ModelCheckpoint(CHECKPOINT, monitor='sparse_categorical_accuracy', verbose=1, save_weights_only=False , save_best_only=True, mode='max') 
+
     return model
 
 def train_and_save_model():
