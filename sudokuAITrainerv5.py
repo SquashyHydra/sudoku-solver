@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 name_ai = "sudoku_ai_modelv4.2"
 EPOCH = 1000
 batch_size = 32 # 32 or 64
-learning_rate = 0.001
+learning_rate = 1e-3
 
 # early stop
 patience = 100
