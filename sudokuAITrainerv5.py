@@ -132,10 +132,10 @@ def build_model():
     return model
 
 def train_and_save_model():
-    X, y = load_sudoku_data('sudoku_data.json')
+    x, y = load_sudoku_data('sudoku_data.json')
 
     # Split data into training and validation sets
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, random_state=42)
 
     model = build_model()
 
@@ -143,9 +143,9 @@ def train_and_save_model():
     log_dir = "tmp/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     
-    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, callbacks=tensorboard_callback)
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, callbacks=tensorboard_callback)
     
-    model.evaluate(x_test)
+    model.evaluate(x_test, y_test, verbose=2)
 
     model.save(f'{name_ai}.keras')
 
