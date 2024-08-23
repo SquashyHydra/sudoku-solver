@@ -81,12 +81,12 @@ def valid_sudoku_metric(y_true, y_pred):
         return tf.reduce_all(tf.reduce_sum(tf.one_hot(tensor, 9), axis=1) == 1, axis=1)
     
     # Validate rows
-    valid_rows = check_valid_entries(y_pred)
+    valid_rows = check_valid_entries(y_pred)  # Expected shape: [batch_size]
     valid_rows = tf.expand_dims(valid_rows, axis=1)  # Shape: [batch_size, 1]
     
     # Validate columns
     y_pred_transposed = tf.transpose(y_pred, perm=[0, 2, 1])  # Transpose to validate columns
-    valid_cols = check_valid_entries(y_pred_transposed)
+    valid_cols = check_valid_entries(y_pred_transposed)  # Expected shape: [batch_size]
     valid_cols = tf.expand_dims(valid_cols, axis=1)  # Shape: [batch_size, 1]
     
     # Validate 3x3 subgrids
@@ -108,12 +108,17 @@ def valid_sudoku_metric(y_true, y_pred):
     
     valid_subgrids = validate_subgrids(y_pred)
 
+    # Debugging: Check shapes before stacking
+    print(f"valid_rows shape: {valid_rows.shape}")
+    print(f"valid_cols shape: {valid_cols.shape}")
+    print(f"valid_subgrids shape: {valid_subgrids.shape}")
+
     # Ensure all tensors have the shape [batch_size, 1]
     valid_rows = tf.squeeze(valid_rows, axis=1)  # Shape: [batch_size]
     valid_cols = tf.squeeze(valid_cols, axis=1)  # Shape: [batch_size]
     valid_subgrids = tf.squeeze(valid_subgrids, axis=1)  # Shape: [batch_size]
     
-    # Concatenate and reduce across axis 1
+    # Stack tensors and reduce across axis 1
     valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
     
     return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))
