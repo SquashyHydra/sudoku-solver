@@ -67,33 +67,48 @@ def sudoku_loss(y_true, y_pred):
     return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
+    """
+    Custom metric for checking the validity of Sudoku solutions.
+    """
     y_pred = tf.argmax(y_pred, axis=-1)  # Convert predicted probabilities to the most likely class (1-9)
     y_true = tf.argmax(y_true, axis=-1)  # Same for true labels
 
-    y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
+    # Reshape predictions to (batch_size, 9, 9)
+    y_pred = tf.reshape(y_pred, [-1, 9, 9])
+    
+    def check_valid_entries(tensor):
+        return tf.reduce_all(tf.reduce_sum(tf.one_hot(tensor, 9), axis=1) == 1, axis=1)
 
     # Validate rows
-    valid_rows = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=2) == 1, axis=1)
+    valid_rows = check_valid_entries(y_pred)
     
     # Validate columns
-    valid_cols = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=1) == 1, axis=1)
+    y_pred_transposed = tf.transpose(y_pred, perm=[0, 2, 1])  # Transpose to validate columns
+    valid_cols = check_valid_entries(y_pred_transposed)
     
     # Validate 3x3 subgrids
-    valid_subgrids = []
-    for i in range(3):
-        for j in range(3):
-            subgrid = y_pred_reshaped[:, i*3:(i+1)*3, j*3:(j+1)*3]
-            valid_subgrids.append(tf.reduce_all(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[1, 2]) == 1, axis=-1))
+    def validate_subgrids(grid):
+        batch_size = tf.shape(grid)[0]
+        subgrid_validities = []
+        for i in range(3):
+            for j in range(3):
+                subgrid = grid[:, i*3:(i+1)*3, j*3:(j+1)*3]
+                subgrid_flattened = tf.reshape(subgrid, [batch_size, -1])
+                valid_subgrid = check_valid_entries(subgrid_flattened)
+                subgrid_validities.append(valid_subgrid)
+        
+        # Stack subgrid validities and reduce them
+        valid_subgrids = tf.stack(subgrid_validities, axis=1)  # Shape [batch_size, 9]
+        valid_subgrids = tf.reduce_all(valid_subgrids, axis=1)  # Shape [batch_size]
+        return valid_subgrids
     
-    # Stack subgrid validity results and reduce them
-    valid_subgrids = tf.stack(valid_subgrids, axis=1)  # Shape should be [batch_size, 9]
-    valid_subgrids = tf.reduce_all(valid_subgrids, axis=1)  # Shape should be [batch_size]
+    valid_subgrids = validate_subgrids(y_pred)
 
     # Combine the validity of rows, columns, and subgrids
     valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
     
     return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))
-
+    
 def build_model():
     model = tf.keras.Sequential([
         tf.keras.layers.InputLayer(input_shape=(81,)),
