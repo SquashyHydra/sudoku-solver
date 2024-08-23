@@ -6,7 +6,7 @@ class SudokuAI:
     def __init__(self, grid):
         self.grid = grid
         try:
-            self.model = tf.keras.models.load_model(f'{name_ai}.keras')
+            self.model = tf.keras.models.load_model(f'models/{name_ai}.keras')
         except Exception as e:
             print(f"Error loading model: {e}")
             raise
