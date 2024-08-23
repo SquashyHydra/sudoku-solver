@@ -310,7 +310,7 @@ def train_and_save_model():
     
     callbacks_list = [checkpoint, tensorboard, reduce_lr]
 
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=EPOCH, steps_per_epoch=num_train//batch_size, batch_size=batch_size, callbacks=callbacks_list)
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=EPOCH, batch_size=batch_size, callbacks=callbacks_list)
     
     model.evaluate(x_test, y_test, verbose=2)
 
