@@ -67,7 +67,35 @@ def sudoku_loss(y_true, y_pred):
     return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
-    raise Exception
+    # Reshape y_pred to [batch_size, 9, 9] for easier manipulation
+    y_pred = tf.reshape(tf.argmax(y_pred, axis=-1), [-1, 9, 9])
+    
+    # Define a function to compute penalties
+    def penalty_grid(grid):
+        # Ensure all digits from 1 to 9 are present exactly once in each row, column, and subgrid
+        valid_rows = tf.reduce_all(tf.reduce_sum(tf.one_hot(grid, 9), axis=1) == 9, axis=1)
+        valid_cols = tf.reduce_all(tf.reduce_sum(tf.one_hot(grid, 9), axis=0) == 9, axis=1)
+        
+        subgrid_penalty = 0
+        for i in range(3):
+            for j in range(3):
+                subgrid = grid[i*3:(i+1)*3, j*3:(j+1)*3]
+                valid_subgrid = tf.reduce_all(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[0, 1]) == 9)
+                subgrid_penalty += tf.cast(tf.logical_not(valid_subgrid), tf.float32)
+        
+        # Compute row and column penalties
+        row_penalty = tf.reduce_sum(tf.cast(tf.logical_not(valid_rows), tf.float32))
+        col_penalty = tf.reduce_sum(tf.cast(tf.logical_not(valid_cols), tf.float32))
+        
+        # Total penalty
+        total_penalty = row_penalty + col_penalty + subgrid_penalty
+        return total_penalty
+    
+    # Apply penalty calculation to the entire batch
+    penalties = tf.map_fn(penalty_grid, y_pred, dtype=tf.float32)
+    mean_penalty = tf.reduce_mean(penalties)
+    
+    return mean_penalty
 
 def build_model():
     model = tf.keras.Sequential([
