@@ -187,6 +187,54 @@ def model5():
 
 
 def model6():
+    model = tf.keras.Sequential([
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same', input_shape=(9,9,1)),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=512, kernel_size=3, padding='same'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+
+        tf.keras.layers.Conv2D(filters=9, kernel_size=1, padding='same'),
+    ])
+
+    return model
+
+def model7():
     from spektral.layers import GCNConv
 
     inputs = tf.keras.Input(shape=(81,))
@@ -205,7 +253,7 @@ def model6():
     return model
 
 def build_model():
-    model = model1()
+    model = model6()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
