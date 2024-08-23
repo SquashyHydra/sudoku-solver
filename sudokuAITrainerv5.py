@@ -38,15 +38,21 @@ def load_sudoku_data(filename):
 
 def sudoku_loss(y_true, y_pred):
     y_pred = tf.reshape(y_pred, [-1, 81, 9])
+
+    # Standard categorical crossentropy loss
     base_loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
-
-    y_pred =tf.argmax(y_pred, axis=-1)
+    
+    # Reshape predictions to [batch_size, 9, 9, 9] for easier validation
+    y_pred = tf.argmax(y_pred, axis=-1)
     y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
-
+    
+    # Penalty for invalid rows
     row_penalty = tf.reduce_mean(tf.cast(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=2) != 1, tf.float32))
-
+    
+    # Penalty for invalid columns
     col_penalty = tf.reduce_mean(tf.cast(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=1) != 1, tf.float32))
-
+    
+    # Penalty for invalid 3x3 subgrids
     subgrid_penalty = 0
     for i in range(3):
         for j in range(3):
@@ -54,9 +60,10 @@ def sudoku_loss(y_true, y_pred):
             subgrid_penalty += tf.reduce_mean(tf.cast(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[1, 2]) != 1, tf.float32))
     
     total_penalty = row_penalty + col_penalty + subgrid_penalty
-
+    
+    # Combine the base loss with the penalties
     total_loss = base_loss + total_penalty
-
+    
     return total_loss
 
 def valid_sudoku_metric(y_true, y_pred):
@@ -65,20 +72,25 @@ def valid_sudoku_metric(y_true, y_pred):
 
     y_pred_reshaped = tf.reshape(y_pred, [-1, 9, 9])
 
-    valid_rows = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=1) == 1, axis=1)
-
+    # Validate rows
+    valid_rows = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=2) == 1, axis=1)
+    
+    # Validate columns
     valid_cols = tf.reduce_all(tf.reduce_sum(tf.one_hot(y_pred_reshaped, 9), axis=1) == 1, axis=1)
-
+    
+    # Validate 3x3 subgrids
     valid_subgrids = []
     for i in range(3):
         for j in range(3):
             subgrid = y_pred_reshaped[:, i*3:(i+1)*3, j*3:(j+1)*3]
-            valid_subgrids.append(tf.reduce_all(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[1, 2]) == 1))
-
-    valid_subgrids = tf.reduce_all(tf.stack(valid_subgrids, axis=1), axis=1)
-
-    valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=1)
-
+            valid_subgrids.append(tf.reduce_all(tf.reduce_sum(tf.one_hot(subgrid, 9), axis=[1, 2]) == 1, axis=-1))
+    
+    # Stack along a new axis and then reduce along that axis
+    valid_subgrids = tf.reduce_all(tf.stack(valid_subgrids, axis=1), axis=-1)
+    
+    # Combine the validity of rows, columns, and subgrids
+    valid_sudoku = tf.reduce_all(tf.stack([valid_rows, valid_cols, valid_subgrids], axis=1), axis=-1)
+    
     return tf.reduce_mean(tf.cast(valid_sudoku, tf.float32))
 
 def build_model():
