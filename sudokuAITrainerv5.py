@@ -126,7 +126,7 @@ def build_model():
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    model.compile(optimizer=optimizer, loss=sudoku_loss, metrics=['accuracy', valid_sudoku_metric])
+    model.compile(optimizer=optimizer, loss=sudoku_loss, metrics=['accuracy'])
     return model
 
 def train_and_save_model():
