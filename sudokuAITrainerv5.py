@@ -97,7 +97,7 @@ def valid_sudoku_metric(y_true, y_pred):
     
     return mean_penalty
 
-def build_model():
+def model1():
     model = tf.keras.Sequential([
         tf.keras.layers.InputLayer(input_shape=(81,)),
         tf.keras.layers.Dense(256, activation='relu'),
@@ -108,6 +108,23 @@ def build_model():
         tf.keras.layers.Reshape((81, 9)),
         tf.keras.layers.Activation('softmax')
     ])
+
+    return model
+
+def model2():
+    model = tf.keras.Sequential([
+        tf.keras.layers.Reshape((9, 9, 1), input_shape=(81,)),
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same'),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same'),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(81 * 9, activation='softmax'),
+        tf.keras.layers.Reshape((81, 9))
+    ])
+
+    return model
+
+def build_model():
+    model = model2()
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
@@ -128,6 +145,8 @@ def train_and_save_model():
     
     model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=epochs, batch_size=batch_size, callbacks=tensorboard_callback)
     
+    model.ev
+
     model.save(f'{name_ai}.keras')
 
 # Example Usage
