@@ -36,11 +36,13 @@ def load_sudoku_data(filename):
 def build_model():
     model = tf.keras.Sequential([
         tf.keras.layers.InputLayer(input_shape=(81,)),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(81 * 9),  # Output shape will be (81 * 9)
-        tf.keras.layers.Reshape((81, 9)),  # Reshape to (81, 9)
-        tf.keras.layers.Activation('softmax')  # Apply softmax for probability distribution
+        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dropout(0.3),
+        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dropout(0.3),
+        tf.keras.layers.Dense(81 * 9),
+        tf.keras.layers.Reshape((81, 9)),
+        tf.keras.layers.Activation('softmax')
     ])
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
